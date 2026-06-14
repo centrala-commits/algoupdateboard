@@ -72,6 +72,14 @@ export const PlusIcon = (p) => (
   </Svg>
 );
 
+export const TruckIcon = (p) => (
+  <Svg {...p}>
+    <path d="M3 6.5h11v9H3zM14 9.5h4l3 3v3h-7z" />
+    <circle cx="7" cy="17.5" r="1.8" />
+    <circle cx="17.5" cy="17.5" r="1.8" />
+  </Svg>
+);
+
 const SHIFT_ICONS = { Day: SunIcon, Main: CloudIcon, Night: MoonIcon };
 
 export function ShiftIcon({ shift, ...rest }) {

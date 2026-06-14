@@ -10,7 +10,7 @@ import {
 } from "../data.js";
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
-import { ShiftIcon, TrashIcon } from "./Icons.jsx";
+import { ShiftIcon, TrashIcon, TruckIcon } from "./Icons.jsx";
 
 // Small inline notes input — saves on blur, syncs when Supabase data arrives.
 function NotesCell({ value, driverId, t }) {
@@ -89,6 +89,22 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
     [driver.id, updateDriver],
   );
 
+  // ELD link lives in the (repurposed) notes field. Click opens it; if none is
+  // set yet it prompts for one. Double-click always lets you edit/replace it.
+  const eldUrl = driver.notes ?? "";
+  const openEld = useCallback(() => {
+    if (eldUrl) {
+      window.open(/^https?:\/\//i.test(eldUrl) ? eldUrl : `https://${eldUrl}`, "_blank", "noopener");
+    } else {
+      const v = window.prompt(`Paste the ELD link for ${driver.name}:`, "");
+      if (v && v.trim()) updateDriver(driver.id, { notes: v.trim() });
+    }
+  }, [eldUrl, driver.id, driver.name, updateDriver]);
+  const editEld = useCallback(() => {
+    const v = window.prompt(`ELD link for ${driver.name} (clear to remove):`, eldUrl);
+    if (v !== null) updateDriver(driver.id, { notes: v.trim() });
+  }, [eldUrl, driver.id, driver.name, updateDriver]);
+
   // A driver assigned to someone since removed from the roster — keep showing them.
   const orphan = driver.updatedBy && !updaters.some((u) => u.nickname === driver.updatedBy);
 
@@ -109,8 +125,25 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
       </td>
 
       <td className={cx("px-3 py-1.5 w-52", t.textPri)}>
-        <div className="font-semibold text-xs leading-snug truncate">{driver.name}</div>
-        <div className={cx("text-xs font-mono tracking-wider", t.textMut)}>{driver.truck}</div>
+        <div className="flex items-center gap-2 min-w-0">
+          <button
+            onClick={openEld}
+            onDoubleClick={editEld}
+            title={eldUrl ? `Open ELD: ${eldUrl}  (double-click to edit)` : "Click to add an ELD link"}
+            className={cx(
+              "shrink-0 w-6 h-6 flex items-center justify-center rounded-md btn-press border",
+              eldUrl
+                ? "text-emerald-600 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20"
+                : cx(t.textMut, "border-transparent hover:bg-white/30"),
+            )}
+          >
+            <TruckIcon size={15} />
+          </button>
+          <div className="min-w-0">
+            <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>
+            <div className={cx("text-xs font-mono tracking-wider", t.textMut)}>{driver.truck}</div>
+          </div>
+        </div>
       </td>
 
       <td className="px-2 py-1.5 w-36">
@@ -118,7 +151,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
           value={driver.status}
           onChange={changeStatus}
           className={cx(
-            "text-xs font-semibold border rounded px-1.5 py-1 w-full cursor-pointer btn-press focus:outline-none focus:ring-1",
+            "text-sm font-bold border rounded px-1.5 py-1.5 w-full cursor-pointer btn-press focus:outline-none focus:ring-1",
             t.inputCls,
           )}
           style={{ color: STATUS_COLOR[driver.status] }}

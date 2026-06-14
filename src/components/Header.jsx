@@ -54,10 +54,10 @@ export function Header({ t, user, onLogout }) {
   ];
 
   return (
-    <header className={cx("fixed top-0 left-0 right-0 z-40 h-12 flex items-center gap-2 px-4", t.headerCls)}>
+    <header className={cx("fixed top-0 left-0 right-0 z-40 h-14 flex items-center gap-2 px-4", t.headerCls)}>
       {/* Logo */}
       <div className="flex items-center shrink-0">
-        <img src={logoUrl} alt="AG" draggable={false} className="h-6 w-auto" />
+        <img src={logoUrl} alt="AG" draggable={false} className="h-7 w-auto" />
       </div>
 
       {/* Server status */}
@@ -93,14 +93,14 @@ export function Header({ t, user, onLogout }) {
               key={shift}
               onClick={() => handleShiftClick(shift)}
               className={cx(
-                "inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg font-semibold btn-press border transition-colors",
+                "inline-flex items-center gap-1.5 text-sm px-2.5 py-1.5 rounded-lg font-semibold btn-press border transition-colors",
                 active
                   ? cx(SHIFT_STYLE[shift].pill, "border-current/20 shadow-sm")
                   : cx(t.btnSec, "opacity-70 hover:opacity-100"),
               )}
               title={`Filter to ${shift} shift`}
             >
-              <ShiftIcon shift={shift} size={11} />
+              <ShiftIcon shift={shift} size={14} />
               {shift}
             </button>
           );
@@ -117,7 +117,7 @@ export function Header({ t, user, onLogout }) {
           if (found) setShiftFilter(found.shift);
         }}
         className={cx(
-          "border rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-2 min-w-[130px] max-w-[160px]",
+          "border rounded-lg px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 min-w-[140px] max-w-[170px]",
           t.inputCls,
           currentUpdater && SHIFT_STYLE[currentUpdater.shift]?.ring,
         )}
@@ -148,19 +148,19 @@ export function Header({ t, user, onLogout }) {
       {/* Dark mode toggle */}
       <button
         onClick={() => setIsDark((v) => !v)}
-        className={cx("w-8 h-8 rounded-lg flex items-center justify-center btn-press shrink-0", t.glassIcon, t.textPri)}
+        className={cx("w-9 h-9 rounded-lg flex items-center justify-center btn-press shrink-0", t.glassIcon, t.textPri)}
         title={isDark ? "Light mode" : "Dark mode"}
       >
-        {isDark ? <SunIcon size={16} /> : <MoonIcon size={16} />}
+        {isDark ? <SunIcon size={19} /> : <MoonIcon size={19} />}
       </button>
 
       {/* Team Stats */}
       {activeTab !== "mgmt" && (
         <button
           onClick={() => setModal({ type: "teamStats" })}
-          className={cx("hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-semibold text-xs btn-press shrink-0", t.btnSec)}
+          className={cx("hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-sm btn-press shrink-0", t.btnSec)}
         >
-          <UsersIcon size={15} /> Stats
+          <UsersIcon size={18} /> Stats
         </button>
       )}
 
@@ -171,7 +171,7 @@ export function Header({ t, user, onLogout }) {
           disabled={reviewedCount === 0}
           title={reviewedCount > 0 ? `Uncheck all ${reviewedCount} completed drivers on this board` : "No completed drivers"}
           className={cx(
-            "hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-semibold text-xs btn-press whitespace-nowrap shrink-0",
+            "hidden md:flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm btn-press whitespace-nowrap shrink-0",
             reviewedCount > 0
               ? "bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 border border-amber-400/30"
               : "bg-slate-400/20 text-slate-400 cursor-not-allowed border border-transparent",
@@ -187,11 +187,11 @@ export function Header({ t, user, onLogout }) {
           onClick={() => currentUpdater && setModal({ type: "confirmAssignAll" })}
           disabled={!currentUpdater}
           className={cx(
-            "hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-semibold text-xs btn-press whitespace-nowrap shrink-0",
+            "hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-sm btn-press whitespace-nowrap shrink-0",
             currentUpdater ? t.btnPri : "bg-slate-400/30 text-slate-400 cursor-not-allowed",
           )}
         >
-          <BoltIcon size={14} /> Assign All
+          <BoltIcon size={16} /> Assign All
         </button>
       )}
 
