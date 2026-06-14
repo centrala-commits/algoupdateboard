@@ -235,9 +235,9 @@ export function ManagementView({ t }) {
                     className={inputCls}
                     required
                   >
-                    <option value="">— Select —</option>
+                    <option value="" style={{ color: "#0f172a", background: "#ffffff" }}>— Select —</option>
                     {companies.map((c) => (
-                      <option key={c.id} value={c.id}>
+                      <option key={c.id} value={c.id} style={{ color: "#0f172a", background: "#ffffff" }}>
                         {c.name} (Board {c.board})
                       </option>
                     ))}

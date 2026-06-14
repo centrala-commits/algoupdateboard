@@ -157,7 +157,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
           style={{ color: STATUS_COLOR[driver.status] }}
         >
           {STATUSES.map((s) => (
-            <option key={s} value={s} style={{ color: STATUS_COLOR[s] }}>
+            <option key={s} value={s} style={{ color: STATUS_COLOR[s], background: "#ffffff" }}>
               {s}
             </option>
           ))}
@@ -182,23 +182,23 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
           className={cx(
             "text-xs font-semibold border rounded px-1.5 py-1 w-full cursor-pointer btn-press focus:outline-none focus:ring-1",
             t.inputCls,
-            driver.updatedBy ? "text-emerald-700" : "",
+            driver.updatedBy ? t.accentText : "",
           )}
           title="Assign responsible updater"
         >
-          <option value="">— Unassigned —</option>
+          <option value="" style={{ color: "#0f172a", background: "#ffffff" }}>— Unassigned —</option>
           {SHIFTS.map((shift) => (
-            <optgroup key={shift} label={`${shift} Shift`}>
+            <optgroup key={shift} label={`${shift} Shift`} style={{ color: "#0f172a", background: "#ffffff" }}>
               {updaters
                 .filter((u) => u.shift === shift)
                 .map((u) => (
-                  <option key={u.id} value={u.nickname}>
+                  <option key={u.id} value={u.nickname} style={{ color: "#0f172a", background: "#ffffff" }}>
                     {u.nickname}
                   </option>
                 ))}
             </optgroup>
           ))}
-          {orphan && <option value={driver.updatedBy}>{driver.updatedBy} (former)</option>}
+          {orphan && <option value={driver.updatedBy} style={{ color: "#0f172a", background: "#ffffff" }}>{driver.updatedBy} (former)</option>}
         </select>
         {driver.updatedAt && <div className={cx("text-xs mt-0.5", t.textMut)}>{driver.updatedAt}</div>}
       </td>

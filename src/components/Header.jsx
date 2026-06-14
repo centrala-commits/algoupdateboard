@@ -123,10 +123,10 @@ export function Header({ t, user, onLogout }) {
         )}
         title="Select yourself as the current updater"
       >
-        <option value="">— Who are you? —</option>
+        <option value="" style={{ color: "#0f172a", background: "#ffffff" }}>— Who are you? —</option>
         {shiftFilter
           ? visibleUpdaters.map((u) => (
-              <option key={u.id} value={u.id}>
+              <option key={u.id} value={u.id} style={{ color: "#0f172a", background: "#ffffff" }}>
                 {u.nickname}
               </option>
             ))
@@ -134,9 +134,9 @@ export function Header({ t, user, onLogout }) {
               const people = updaters.filter((u) => u.shift === shift);
               if (!people.length) return null;
               return (
-                <optgroup key={shift} label={`${shift} Shift`}>
+                <optgroup key={shift} label={`${shift} Shift`} style={{ color: "#0f172a", background: "#ffffff" }}>
                   {people.map((u) => (
-                    <option key={u.id} value={u.id}>
+                    <option key={u.id} value={u.id} style={{ color: "#0f172a", background: "#ffffff" }}>
                       {u.nickname}
                     </option>
                   ))}
