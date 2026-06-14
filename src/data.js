@@ -14,12 +14,14 @@ export const SHIFT_STYLE = {
 };
 
 export const STATUS_COLOR = {
-  "All good": "#059669",
-  "Need to check": "#d97706",
-  Offline: "#6b7280",
+  "All good":     "#059669",
+  "Need to check":"#d97706",
+  "Offline":      "#6b7280",
+  "Cycle":        "#7c3aed",
+  "Check PF":     "#dc2626",
 };
 
-export const STATUSES = ["All good", "Need to check", "Offline"];
+export const STATUSES = ["All good", "Need to check", "Offline", "Cycle", "Check PF"];
 
 // ---------------------------------------------------------------------------
 // Updaters  (a.k.a. "shift responsibles")

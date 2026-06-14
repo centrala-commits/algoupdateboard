@@ -42,8 +42,8 @@ function Shell({ user, onLogout }) {
       {modal?.type === "addDriver" && <AddDriverModal t={t} defaultCompanyId={modal.companyId} onClose={closeModal} />}
       {modal?.type === "deleteCompany" && <DeleteCompanyModal t={t} company={modal.company} onClose={closeModal} />}
 
-      <footer className="fixed bottom-0 right-0 z-30 pointer-events-none">
-        <p className={cx("text-[8px] px-2 py-0.5 opacity-15 select-none tracking-widest", t.textMut)}>powered by norris</p>
+      <footer className="fixed bottom-0 left-0 z-30 pointer-events-none">
+        <p className={cx("text-[7px] px-2 py-0.5 opacity-20 select-none tracking-widest uppercase", t.textMut)}>Powered By Norris (Nura)</p>
       </footer>
     </div>
   );

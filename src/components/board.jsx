@@ -131,10 +131,10 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
         </select>
       </td>
 
-      <td className="px-3 py-1.5 w-48">
+      <td className="px-3 py-1.5 w-36">
         <div className="flex items-center gap-2">
           <EldDot />
-          <NotesCell value={driver.notes ?? ""} driverId={driver.id} t={t} />
+          <span className={cx("text-xs font-mono", t.textMut)}>API needed</span>
         </div>
       </td>
 
@@ -229,7 +229,7 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
               <th className="px-2 py-1.5 text-center text-xs font-semibold w-16 uppercase tracking-wider">Done</th>
               <th className="px-3 py-1.5 text-left text-xs font-semibold w-52 uppercase tracking-wider">Driver / Truck</th>
               <th className="px-2 py-1.5 text-left text-xs font-semibold w-36 uppercase tracking-wider">Status</th>
-              <th className="px-3 py-1.5 text-left text-xs font-semibold w-48 uppercase tracking-wider">ELD / Location</th>
+              <th className="px-3 py-1.5 text-left text-xs font-semibold w-36 uppercase tracking-wider">ELD</th>
               <th className="px-3 py-1.5 text-left text-xs font-semibold w-32 uppercase tracking-wider">Delivery</th>
               <th className="px-3 py-1.5 text-left text-xs font-semibold w-44 uppercase tracking-wider">Updater</th>
             </tr>
@@ -237,7 +237,7 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
           <tbody>
             {drivers.length === 0 ? (
               <tr>
-                <td colSpan={6} className={cx("px-4 py-6 text-center text-xs italic", t.textMut)}>
+                <td colSpan={5} className={cx("px-4 py-6 text-center text-xs italic", t.textMut)}>
                   No drivers — click "+ Driver" to add one.
                 </td>
               </tr>
