@@ -38,15 +38,25 @@ select { appearance: auto; }
     0 0 0 1px rgba(15,28,40,0.06);
 }
 
+/* Deep, layered dark ground with teal glows — gives the night theme depth */
+.app-bg-dark {
+  background:
+    radial-gradient(1100px 680px at 82% -12%, rgba(14,116,144,0.22), transparent 60%),
+    radial-gradient(900px 600px at -5% 108%, rgba(56,179,214,0.12), transparent 55%),
+    linear-gradient(160deg, #0c1822 0%, #0f1c28 55%, #0a1017 100%);
+  background-attachment: fixed;
+}
+
 .glass-dark {
-  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
-  -webkit-backdrop-filter: blur(28px) saturate(150%);
-          backdrop-filter: blur(28px) saturate(150%);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(145deg, rgba(56,179,214,0.10) 0%, rgba(255,255,255,0.035) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+          backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.14);
   box-shadow:
-    0 4px 24px rgba(0,0,0,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.09),
-    inset 0 0 0 1px rgba(255,255,255,0.04);
+    0 8px 30px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(56,179,214,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
 .glass-header-light {
@@ -58,11 +68,11 @@ select { appearance: auto; }
 }
 
 .glass-header-dark {
-  background: rgba(15,22,30,0.60);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
-          backdrop-filter: blur(40px) saturate(150%);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 2px 16px rgba(0,0,0,0.40);
+  background: linear-gradient(90deg, rgba(14,116,144,0.16) 0%, rgba(15,22,30,0.62) 45%);
+  -webkit-backdrop-filter: blur(40px) saturate(160%);
+          backdrop-filter: blur(40px) saturate(160%);
+  border-bottom: 1px solid rgba(56,179,214,0.14);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 2px 18px rgba(0,0,0,0.45);
 }
 
 .glass-bar-light {
