@@ -127,12 +127,12 @@ select { appearance: auto; }
 }
 
 .logo-mark-light {
-  filter: blur(5px) drop-shadow(0 0 40px rgba(34,116,165,0.22));
+  filter: blur(5px) drop-shadow(0 0 40px rgba(14,116,144,0.22));
   animation: heartbeat 6s ease-in-out infinite;
 }
 
 .logo-mark-dark {
-  filter: blur(5px) brightness(1.5) saturate(1.2) drop-shadow(0 0 50px rgba(74,159,212,0.30));
+  filter: blur(5px) brightness(1.5) saturate(1.2) drop-shadow(0 0 50px rgba(56,179,214,0.30));
   animation: heartbeat 6s ease-in-out infinite;
 }
 
