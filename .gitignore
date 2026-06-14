@@ -1,0 +1,12 @@
+node_modules
+dist
+*.local
+.DS_Store
+.claude/
+_*.cjs
+_*.js
+
+# Local environment — never commit real .env (keep .env.example tracked)
+.env
+.env.*
+!.env.example

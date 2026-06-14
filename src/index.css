@@ -1,0 +1,319 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ *
+ *  AG Dispatch — global styles
+ *  - Light = white "liquid glass" (default).  Dark = optional.
+ *  - Custom keyframes + decorative circle elements for the windows.
+ * ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  width: 100%;
+}
+
+/* Smooth, consistent micro-transitions across interactive surfaces.
+   (Buttons keep their own faster .btn-press transition below.) */
+a,
+select,
+input,
+textarea,
+tr,
+th,
+td {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+select {
+  appearance: auto;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b859;
+  border-radius: 99px;
+}
+
+/* ===================================================================
+   LIQUID GLASS  —  light surfaces are genuinely white / frosted
+   =================================================================== */
+.glass-light {
+  background: linear-gradient(135deg, #ffffffd9, #ffffffaa);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.85);
+  box-shadow:
+    0 4px 24px #0f172b26,
+    0 1px 4px #0f172b0f,
+    inset 0 1px 0 #ffffff,
+    inset 0 0 0 1px rgba(255,255,255,0.6);
+}
+
+.glass-dark {
+  background: #181820a8;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid #ffffff2e;
+  box-shadow:
+    0 8px 32px #00000080,
+    inset 0 1px 0 #ffffff22,
+    inset 0 0 0 1px #ffffff12;
+}
+
+.glass-header-light {
+  background: rgba(255,255,255,0.82);
+  -webkit-backdrop-filter: blur(32px) saturate(210%);
+  backdrop-filter: blur(32px) saturate(210%);
+  border-bottom: 1px solid rgba(255,255,255,0.9);
+  box-shadow:
+    0 2px 20px #0f172b22,
+    inset 0 1px 0 #ffffff;
+}
+
+.glass-header-dark {
+  background: #0f0f14c0;
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  backdrop-filter: blur(32px) saturate(160%);
+  border-bottom: 1px solid #ffffff18;
+  box-shadow: 0 1px 16px #0008;
+}
+
+/* Frosted title bar for company block headers */
+.glass-bar-light {
+  position: relative;
+  background: linear-gradient(120deg, rgba(255,255,255,0.88) 0%, rgba(234,242,255,0.78) 55%, rgba(243,236,255,0.78) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  backdrop-filter: blur(20px) saturate(200%);
+  border-bottom: 1px solid rgba(255,255,255,0.85);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    inset 0 0 0 1px rgba(255,255,255,0.5),
+    0 1px 6px #0f172b0f;
+}
+
+.glass-modal-light {
+  background: linear-gradient(150deg, rgba(255,255,255,0.95), rgba(255,255,255,0.82));
+  -webkit-backdrop-filter: blur(40px) saturate(210%);
+  backdrop-filter: blur(40px) saturate(210%);
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow:
+    0 20px 60px #0f172b3d,
+    0 4px 16px #0f172b1a,
+    inset 0 1px 0 #ffffff,
+    inset 0 0 0 1px rgba(255,255,255,0.65);
+}
+
+.glass-modal-dark {
+  background: #12121acc;
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid #ffffff30;
+  box-shadow:
+    0 20px 60px #00000090,
+    inset 0 1px 0 #ffffff22,
+    inset 0 0 0 1px #ffffff12;
+}
+
+/* ===================================================================
+   Algo Service logo watermark (AG monogram, src/assets/logo.svg verbatim)
+   Light mode shows the artwork untouched; dark mode only applies a
+   brightness/glow filter so it reads on the near-black background.
+   The float animation moves opacity/scale only — never the artwork.
+   =================================================================== */
+.logo-mark-light {
+  filter: drop-shadow(0 12px 60px #16714b33);
+  animation: logoBreathe 9s ease-in-out infinite;
+}
+
+.logo-mark-dark {
+  filter: brightness(1.6) saturate(1.1) drop-shadow(0 12px 70px #22c55e4d);
+  animation: logoBreathe 9s ease-in-out infinite;
+}
+
+/* ===================================================================
+   KEYFRAMES  (existing + new "non-standard" ones)
+   =================================================================== */
+@keyframes logoBreathe {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.18; transform: scale(1.05); }
+}
+@keyframes fadeSlideIn {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes modalPop {
+  0% { opacity: 0; transform: scale(0.94) translateY(-10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes ledGreen {
+  0%, 100% { box-shadow: 0 0 0 0 #34d399a6; }
+  60% { box-shadow: 0 0 0 6px #34d39900; }
+}
+@keyframes ledRed {
+  0%, 100% { box-shadow: 0 0 0 0 #f87171a6; }
+  60% { box-shadow: 0 0 0 6px #f8717100; }
+}
+@keyframes checkBounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  65% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+/* --- new, non-standard motion --- */
+@keyframes ringSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes ringSpinRev {
+  to { transform: rotate(-360deg); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+@keyframes bubbleFloat {
+  0% { transform: translateY(8px) scale(0.9); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(-26px) scale(1.1); opacity: 0; }
+}
+@keyframes sheenSweep {
+  0% { transform: translateX(-130%) skewX(-18deg); }
+  100% { transform: translateX(230%) skewX(-18deg); }
+}
+@keyframes popScale {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.25); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===================================================================
+   ANIMATION UTILITY CLASSES
+   =================================================================== */
+.fade-in { animation: fadeSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.modal-pop { animation: modalPop 0.19s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.led-green { animation: ledGreen 2.5s ease-out infinite; }
+.led-red { animation: ledRed 2.5s ease-out infinite; }
+.check-bounce { animation: checkBounce 0.24s ease-out; }
+.orb-drift { animation: orbDrift 18s ease-in-out infinite; }
+.pop-scale { animation: popScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+.btn-press {
+  transition: transform 70ms, background-color 0.12s, opacity 0.12s;
+}
+.btn-press:active { transform: scale(0.95); }
+
+.row-fade { opacity: 0.3; transition: opacity 0.28s; }
+.row-fade:hover { opacity: 0.58; }
+
+/* ===================================================================
+   DECORATIVE CIRCLES FOR THE "WINDOWS" (modals / cards)
+   =================================================================== */
+.deco-bubble {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+/* slow rotating gradient ring drawn with a conic mask */
+.deco-ring {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    currentColor 70deg,
+    transparent 160deg,
+    currentColor 250deg,
+    transparent 360deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  opacity: 0.5;
+  animation: ringSpin 14s linear infinite;
+}
+.deco-ring.rev { animation: ringSpinRev 22s linear infinite; }
+
+.deco-orbit {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  animation: breathe 6s ease-in-out infinite;
+}
+
+/* moving light sheen used on modal / card headers */
+.sheen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 35%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  pointer-events: none;
+  animation: sheenSweep 4.5s ease-in-out infinite;
+}
+.sheen.dark { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent); }
+
+/* Frosted-glass tile for standalone icons */
+.glass-icon {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.25));
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+  backdrop-filter: blur(8px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 3px rgba(15, 23, 43, 0.12);
+}
+.glass-icon-dark {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.4);
+}

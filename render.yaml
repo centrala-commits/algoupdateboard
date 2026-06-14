@@ -1,0 +1,16 @@
+# Render Blueprint — serve AG Dispatch as a STATIC SITE (recommended for a Vite SPA).
+# Static sites have no start command, are free, and run on Render's CDN.
+#
+# To use: Render Dashboard -> New -> Blueprint -> pick this repo.
+# (Or configure an existing Static Site with the build command + publish dir below.)
+services:
+  - type: web
+    name: algoupdateboard
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    # SPA fallback so deep links resolve to index.html
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
