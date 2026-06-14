@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../store.jsx";
 import {
   SHIFTS,
@@ -12,18 +12,29 @@ import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
 import { ShiftIcon, TrashIcon } from "./Icons.jsx";
 
-// Small inline notes input — saves on blur.
+// Small inline notes input — saves on blur, syncs when Supabase data arrives.
 function NotesCell({ value, driverId, t }) {
   const { updateDriver } = useApp();
-  const [draft, setDraft] = useState(value);
+  const [draft, setDraft] = useState(value ?? "");
+  const focused = useRef(false);
+
+  // Sync draft when external value changes (Supabase load / real-time update),
+  // but never overwrite text the user is actively typing.
+  useEffect(() => {
+    if (!focused.current) setDraft(value ?? "");
+  }, [value]);
+
   const save = useCallback(() => {
-    if (draft !== value) updateDriver(driverId, { notes: draft });
+    focused.current = false;
+    if (draft !== (value ?? "")) updateDriver(driverId, { notes: draft });
   }, [draft, value, driverId, updateDriver]);
+
   return (
     <input
       type="text"
       value={draft}
       onChange={(e) => setDraft(e.target.value)}
+      onFocus={() => { focused.current = true; }}
       onBlur={save}
       placeholder="Notes…"
       className={cx("text-xs px-1.5 py-0.5 rounded border w-full min-w-0 focus:outline-none focus:ring-1 bg-transparent", t.inputCls)}

@@ -2,13 +2,9 @@
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -17,208 +13,162 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-#root {
-  width: 100%;
-}
+#root { width: 100%; }
 
-select {
-  appearance: auto;
-}
+select { appearance: auto; }
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
-  border-radius: 99px;
-}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.30); border-radius: 99px; }
 
 /* ===================================================================
-   LIQUID GLASS — fully transparent, blurred background shows through
+   LIQUID GLASS — neutral, professional, transparent
    =================================================================== */
 
-/* Main card / company block */
 .glass-light {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.28) 0%,
-    rgba(255, 255, 255, 0.12) 100%
-  );
-  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(1.04);
-  backdrop-filter: blur(32px) saturate(180%) brightness(1.04);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: linear-gradient(145deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.14) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%) brightness(1.03);
+          backdrop-filter: blur(28px) saturate(160%) brightness(1.03);
+  border: 1px solid rgba(255,255,255,0.52);
   box-shadow:
-    0 8px 32px rgba(15, 23, 43, 0.08),
-    0 2px 8px rgba(15, 23, 43, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.80),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    0 4px 20px rgba(15,23,43,0.07),
+    0 1px 4px rgba(15,23,43,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    inset 0 0 0 1px rgba(255,255,255,0.24);
 }
 
 .glass-dark {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.09) 0%,
-    rgba(255, 255, 255, 0.04) 100%
-  );
-  -webkit-backdrop-filter: blur(32px) saturate(160%);
-  backdrop-filter: blur(32px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+          backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.10);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.40),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 4px 24px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.09),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
-/* Sticky header bar */
 .glass-header-light {
-  background: rgba(255, 255, 255, 0.42);
-  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.06);
-  backdrop-filter: blur(48px) saturate(200%) brightness(1.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.70);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.90),
-    0 4px 24px rgba(15, 23, 43, 0.07);
+  background: rgba(255,255,255,0.48);
+  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.04);
+          backdrop-filter: blur(40px) saturate(180%) brightness(1.04);
+  border-bottom: 1px solid rgba(255,255,255,0.72);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.90), 0 2px 16px rgba(15,23,43,0.06);
 }
 
 .glass-header-dark {
-  background: rgba(12, 12, 18, 0.55);
-  -webkit-backdrop-filter: blur(48px) saturate(160%);
-  backdrop-filter: blur(48px) saturate(160%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 24px rgba(0, 0, 0, 0.40);
+  background: rgba(10,10,16,0.58);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+          backdrop-filter: blur(40px) saturate(150%);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 2px 16px rgba(0,0,0,0.40);
 }
 
-/* Company card title bar */
 .glass-bar-light {
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0.38) 0%,
-    rgba(220, 240, 255, 0.22) 55%,
-    rgba(235, 225, 255, 0.22) 100%
-  );
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.80);
+  background: linear-gradient(120deg, rgba(255,255,255,0.40) 0%, rgba(248,250,252,0.28) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+          backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,0.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
 }
 
-/* Modals */
+.glass-bar-dark {
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
 .glass-modal-light {
-  background: linear-gradient(
-    150deg,
-    rgba(255, 255, 255, 0.52) 0%,
-    rgba(255, 255, 255, 0.30) 100%
-  );
-  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.06);
-  backdrop-filter: blur(48px) saturate(200%) brightness(1.06);
-  border: 1px solid rgba(255, 255, 255, 0.70);
+  background: linear-gradient(150deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.36) 100%);
+  -webkit-backdrop-filter: blur(44px) saturate(180%) brightness(1.04);
+          backdrop-filter: blur(44px) saturate(180%) brightness(1.04);
+  border: 1px solid rgba(255,255,255,0.72);
   box-shadow:
-    0 24px 72px rgba(15, 23, 43, 0.14),
-    0 4px 16px rgba(15, 23, 43, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.90),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+    0 20px 60px rgba(15,23,43,0.12),
+    0 4px 12px rgba(15,23,43,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.90),
+    inset 0 0 0 1px rgba(255,255,255,0.36);
 }
 
 .glass-modal-dark {
-  background: linear-gradient(
-    150deg,
-    rgba(30, 30, 46, 0.72) 0%,
-    rgba(18, 18, 28, 0.60) 100%
-  );
-  -webkit-backdrop-filter: blur(48px) saturate(160%);
-  backdrop-filter: blur(48px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(150deg, rgba(28,28,40,0.75) 0%, rgba(16,16,24,0.65) 100%);
+  -webkit-backdrop-filter: blur(44px) saturate(150%);
+          backdrop-filter: blur(44px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.11);
   box-shadow:
-    0 24px 72px rgba(0, 0, 0, 0.60),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    0 20px 60px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.09),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
-/* Small frosted icon tiles */
 .glass-icon {
-  background: rgba(255, 255, 255, 0.38);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  backdrop-filter: blur(12px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 4px rgba(15, 23, 43, 0.08);
+  background: rgba(255,255,255,0.40);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+          backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.62);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 1px 4px rgba(15,23,43,0.07);
 }
 
 .glass-icon-dark {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.07);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 4px rgba(0, 0, 0, 0.30);
+          backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.11);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 1px 4px rgba(0,0,0,0.28);
 }
 
 /* ===================================================================
-   BACKGROUND ORBS — visible through the glass
+   LOGO WATERMARK — heartbeat pulse, visible + blurry
    =================================================================== */
-@keyframes orbDrift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(40px, -30px) scale(1.06); }
-  66%       { transform: translate(-28px, 22px) scale(0.96); }
-}
-
-.orb-drift { animation: orbDrift 20s ease-in-out infinite; }
-
-/* ===================================================================
-   WATERMARK
-   =================================================================== */
-@keyframes logoBreathe {
-  0%, 100% { opacity: 0.07; transform: scale(1); }
-  50%       { opacity: 0.13; transform: scale(1.04); }
+@keyframes heartbeat {
+  0%   { transform: scale(1);    opacity: 0.13; }
+  10%  { transform: scale(1.09); opacity: 0.22; }
+  20%  { transform: scale(0.98); opacity: 0.13; }
+  30%  { transform: scale(1.05); opacity: 0.18; }
+  40%  { transform: scale(1);    opacity: 0.13; }
+  100% { transform: scale(1);    opacity: 0.13; }
 }
 
 .logo-mark-light {
-  filter: drop-shadow(0 8px 40px rgba(21, 120, 77, 0.20));
-  animation: logoBreathe 10s ease-in-out infinite;
+  filter: blur(5px) drop-shadow(0 0 40px rgba(21,120,77,0.18));
+  animation: heartbeat 2.4s ease-in-out infinite;
 }
 
 .logo-mark-dark {
-  filter: brightness(1.5) saturate(1.1) drop-shadow(0 8px 60px rgba(52, 211, 153, 0.30));
-  animation: logoBreathe 10s ease-in-out infinite;
+  filter: blur(5px) brightness(1.6) saturate(1.2) drop-shadow(0 0 50px rgba(52,211,153,0.25));
+  animation: heartbeat 2.4s ease-in-out infinite;
 }
 
 /* ===================================================================
-   INTERACTIVE UTILITIES
+   ELD LED PULSES
    =================================================================== */
-
-/* ELD LED pulses */
 @keyframes ledGreen {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.65); }
-  60%       { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(52,211,153,0.65); }
+  60%      { box-shadow: 0 0 0 6px rgba(52,211,153,0); }
 }
 @keyframes ledRed {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.65); }
-  60%       { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.65); }
+  60%      { box-shadow: 0 0 0 6px rgba(248,113,113,0); }
 }
-
 .led-green { animation: ledGreen 2.5s ease-out infinite; }
 .led-red   { animation: ledRed 2.5s ease-out infinite; }
 
-/* Checkbox check bounce */
+/* ===================================================================
+   MICRO-INTERACTIONS
+   =================================================================== */
 @keyframes checkBounce {
   0%   { transform: scale(1); }
-  35%  { transform: scale(1.30); }
-  65%  { transform: scale(0.92); }
+  35%  { transform: scale(1.28); }
+  65%  { transform: scale(0.93); }
   100% { transform: scale(1); }
 }
 .check-bounce { animation: checkBounce 0.22s ease-out; }
 
-/* Button press micro-feedback */
 .btn-press { transition: transform 70ms, opacity 0.12s; }
 .btn-press:active { transform: scale(0.95); }
 
-/* Faded reviewed rows */
-.row-fade { opacity: 0.28; transition: opacity 0.25s; }
-.row-fade:hover { opacity: 0.55; }
+.row-fade { opacity: 0.26; transition: opacity 0.25s; }
+.row-fade:hover { opacity: 0.52; }
 
-/* Smooth colour/shadow transitions on interactive elements */
 a, select, input, textarea, tr, th, td {
   transition:
     background-color 0.18s ease,
