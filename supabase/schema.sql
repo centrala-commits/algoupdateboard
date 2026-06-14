@@ -31,8 +31,13 @@ create table if not exists drivers (
   is_reviewed   boolean not null default false,
   updated_by    text,
   updated_at    text,
+  notes         text default '',
   created_at    timestamptz default now()
 );
+
+-- If the table already existed without `notes` (used to store the ELD link),
+-- add it. Safe to run repeatedly.
+alter table drivers add column if not exists notes text default '';
 
 create index if not exists drivers_company_id_idx on drivers(company_id);
 
