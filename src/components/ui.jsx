@@ -17,18 +17,27 @@ const logoUrl = Object.values(logoOverride)[0] ?? logoSvg;
 export function Background({ isDark }) {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-      <div
-        className={cx("absolute rounded-full blur-3xl orb-drift", isDark ? "bg-emerald-500/7" : "bg-emerald-400/16")}
-        style={{ width: 700, height: 700, top: "-15%", left: "-8%" }}
-      />
-      <div
-        className={cx("absolute rounded-full blur-3xl", isDark ? "bg-violet-500/6" : "bg-violet-400/16")}
-        style={{ width: 550, height: 550, top: "20%", right: "-12%", animation: "orbDrift 22s ease-in-out infinite reverse" }}
-      />
-      <div
-        className={cx("absolute rounded-full blur-3xl", isDark ? "bg-emerald-500/4" : "bg-emerald-400/12")}
-        style={{ width: 450, height: 450, bottom: "-8%", left: "20%", animation: "orbDrift 26s ease-in-out infinite 5s" }}
-      />
+      {isDark ? (
+        <>
+          <div className="absolute rounded-full orb-drift"
+            style={{ width: 800, height: 800, top: "-20%", left: "-10%", background: "radial-gradient(circle, rgba(52,211,153,0.13) 0%, transparent 70%)", filter: "blur(40px)" }} />
+          <div className="absolute rounded-full"
+            style={{ width: 600, height: 600, top: "15%", right: "-15%", background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)", filter: "blur(40px)", animation: "orbDrift 24s ease-in-out infinite reverse" }} />
+          <div className="absolute rounded-full"
+            style={{ width: 500, height: 500, bottom: "-10%", left: "25%", background: "radial-gradient(circle, rgba(56,189,248,0.09) 0%, transparent 70%)", filter: "blur(40px)", animation: "orbDrift 28s ease-in-out infinite 4s" }} />
+        </>
+      ) : (
+        <>
+          <div className="absolute rounded-full orb-drift"
+            style={{ width: 900, height: 900, top: "-22%", left: "-12%", background: "radial-gradient(circle, rgba(52,211,153,0.45) 0%, rgba(16,185,129,0.20) 40%, transparent 70%)", filter: "blur(48px)" }} />
+          <div className="absolute rounded-full"
+            style={{ width: 700, height: 700, top: "10%", right: "-15%", background: "radial-gradient(circle, rgba(167,139,250,0.40) 0%, rgba(139,92,246,0.18) 40%, transparent 70%)", filter: "blur(48px)", animation: "orbDrift 24s ease-in-out infinite reverse" }} />
+          <div className="absolute rounded-full"
+            style={{ width: 600, height: 600, bottom: "-12%", left: "20%", background: "radial-gradient(circle, rgba(56,189,248,0.38) 0%, rgba(14,165,233,0.16) 40%, transparent 70%)", filter: "blur(48px)", animation: "orbDrift 30s ease-in-out infinite 6s" }} />
+          <div className="absolute rounded-full"
+            style={{ width: 400, height: 400, top: "55%", left: "-5%", background: "radial-gradient(circle, rgba(251,191,36,0.22) 0%, transparent 70%)", filter: "blur(40px)", animation: "orbDrift 22s ease-in-out infinite 2s reverse" }} />
+        </>
+      )}
     </div>
   );
 }
