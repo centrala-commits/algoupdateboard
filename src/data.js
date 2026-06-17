@@ -13,15 +13,35 @@ export const SHIFT_STYLE = {
   Night: { pill: "bg-indigo-500/15 text-indigo-700", dot: "bg-indigo-500", ring: "ring-indigo-500/40" },
 };
 
-export const STATUS_COLOR = {
-  "All good":     "#059669",
-  "Need to check":"#d97706",
-  "Offline":      "#6b7280",
-  "Cycle":        "#7c3aed",
-  "Check PF":     "#dc2626",
+// ---------------------------------------------------------------------------
+// Status colour system — SINGLE SOURCE OF TRUTH. Colour encodes meaning.
+// Red is reserved for genuine emergencies only — never routine/pending states.
+// ---------------------------------------------------------------------------
+export const STATUS = {
+  ok:        { text: "#0F766E", tint: "#F0FDFA", dot: "#0F766E" },
+  pending:   { text: "#B45309", tint: "#FFFBEB", dot: "#F59E0B" }, // e.g. "API needed"
+  attention: { text: "#C2410C", tint: "#FFF7ED", dot: "#EA580C" },
+  emergency: { text: "#B91C1C", tint: "#FEF2F2", dot: "#DC2626" },
+  // Neutral states (not ok/pending/attention/emergency) — kept calm, never red.
+  offline:   { text: "#64748B", tint: "#F8FAFC", dot: "#94A3B8" },
+  cycle:     { text: "#7C3AED", tint: "#F5F3FF", dot: "#8B5CF6" },
 };
 
 export const STATUSES = ["All good", "Need to check", "Offline", "Cycle", "Check PF"];
+
+// Each board status maps to exactly one semantic token above.
+export const STATUS_TOKEN = {
+  "All good":      STATUS.ok,
+  "Need to check": STATUS.attention,
+  "Offline":       STATUS.offline,
+  "Cycle":         STATUS.cycle,
+  "Check PF":      STATUS.emergency,
+};
+
+// Back-compat flat map (status string -> text colour) consumed by the cells.
+export const STATUS_COLOR = Object.fromEntries(
+  STATUSES.map((s) => [s, (STATUS_TOKEN[s] ?? STATUS.ok).text]),
+);
 
 // ---------------------------------------------------------------------------
 // Updaters  (a.k.a. "shift responsibles")

@@ -66,7 +66,7 @@ export function Header({ t, user, onLogout }) {
       {/* Server status */}
       <div className="flex items-center gap-1 shrink-0" title={serverOnline ? "Server connected" : "Server offline"}>
         <span className={cx("w-2 h-2 rounded-full", serverOnline ? "bg-emerald-500" : "bg-rose-500 animate-pulse")} />
-        <span className={cx("text-xs hidden lg:inline", t.textMut)}>{serverOnline ? "Live" : "Offline"}</span>
+        <span className="text-xs hidden lg:inline text-slate-300">{serverOnline ? "Live" : "Offline"}</span>
       </div>
 
       {/* Board tabs */}
@@ -77,7 +77,7 @@ export function Header({ t, user, onLogout }) {
             onClick={() => setActiveTab(k)}
             className={cx(
               "px-2.5 py-1 rounded-lg text-xs font-semibold btn-press whitespace-nowrap",
-              activeTab === k ? t.tabActive : t.tabInactive,
+              activeTab === k ? t.tabActive : "text-slate-300 hover:text-white hover:bg-white/10",
             )}
           >
             {l}
@@ -189,8 +189,8 @@ export function Header({ t, user, onLogout }) {
           className={cx(
             "hidden md:flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm btn-press whitespace-nowrap shrink-0",
             reviewedCount > 0
-              ? "bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 border border-amber-400/30"
-              : "bg-slate-400/20 text-slate-400 cursor-not-allowed border border-transparent",
+              ? "bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-300/40"
+              : "bg-slate-500/30 text-slate-400 cursor-not-allowed border border-transparent",
           )}
         >
           ↺ Reset Done{reviewedCount > 0 ? ` (${reviewedCount})` : ""}
@@ -214,7 +214,7 @@ export function Header({ t, user, onLogout }) {
       {/* User / Logout */}
       {user && (
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className={cx("text-xs font-semibold hidden lg:inline", t.textSec)} title={`Signed in as ${user.username}`}>
+          <span className="text-xs font-semibold hidden lg:inline text-slate-300" title={`Signed in as ${user.username}`}>
             {user.name || user.username}
           </span>
           <button

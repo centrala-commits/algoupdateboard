@@ -1,5 +1,5 @@
 import { useApp } from "../store.jsx";
-import { cx } from "../data.js";
+import { cx, STATUS } from "../data.js";
 import logoSvg from "../assets/algo-logo.svg";
 
 // If the original raster logo file is dropped in as src/assets/algo-logo.png
@@ -44,10 +44,12 @@ export function AGWatermark() {
 // ELD status LED.
 // ---------------------------------------------------------------------------
 export function EldDot() {
+  // "API needed" is a routine pending state — amber, NOT red (avoids alarm fatigue).
   return (
     <span
-      className="inline-block w-2.5 h-2.5 rounded-full shrink-0 bg-rose-500 led-red"
-      title="ELD Offline"
+      className="inline-block w-2.5 h-2.5 rounded-full shrink-0 led-amber"
+      style={{ background: STATUS.pending.dot }}
+      title="ELD: API needed"
     />
   );
 }

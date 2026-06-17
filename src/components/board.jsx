@@ -3,7 +3,9 @@ import { useApp } from "../store.jsx";
 import {
   SHIFTS,
   SHIFT_STYLE,
+  STATUS,
   STATUS_COLOR,
+  STATUS_TOKEN,
   STATUSES,
   cx,
   nowTime,
@@ -47,7 +49,7 @@ function NotesCell({ value, driverId, t }) {
 // One driver row.
 // ---------------------------------------------------------------------------
 const DriverRow = memo(function DriverRow({ driver, t }) {
-  const { currentUpdater, updateDriver, bumpLog, updaters, assignDriverUpdater, soundOn } = useApp();
+  const { currentUpdater, updateDriver, bumpLog, updaters, assignDriverUpdater, soundOn, isDark } = useApp();
 
   // Marking reviewed (with an updater selected) attributes the row to that
   // updater and logs one update. Un-checking just clears the flag — it does not
@@ -112,8 +114,16 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
   // A driver assigned to someone since removed from the roster — keep showing them.
   const orphan = driver.updatedBy && !updaters.some((u) => u.nickname === driver.updatedBy);
 
+  // Status drives a faint row tint (light theme only) so problem states stand
+  // out; "All good" rows stay white. Background-only — never affects layout.
+  const token = STATUS_TOKEN[driver.status] ?? STATUS.ok;
+  const rowTint = !isDark && token !== STATUS.ok ? { background: token.tint } : undefined;
+
   return (
-    <tr className={cx(t.tblRow, t.tblHover, "transition-opacity duration-200", driver.isReviewed && "row-fade")}>
+    <tr
+      className={cx(t.tblRow, t.tblHover, "transition-opacity duration-200", driver.isReviewed && "row-fade")}
+      style={rowTint}
+    >
       <td className="px-2 py-1.5 text-center w-16">
         <button
           onClick={toggleReview}
@@ -176,7 +186,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
       <td className="px-3 py-1.5 w-36">
         <div className="flex items-center gap-2">
           <EldDot />
-          <span className={cx("text-xs font-mono", t.textMut)}>API needed</span>
+          <span className="text-xs font-mono" style={{ color: isDark ? STATUS.pending.dot : STATUS.pending.text }}>API needed</span>
         </div>
       </td>
 
