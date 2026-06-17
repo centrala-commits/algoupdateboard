@@ -10,9 +10,8 @@ import {
 } from "../data.js";
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
-import { ShiftIcon, TrashIcon } from "./Icons.jsx";
+import { ShiftIcon, TrashIcon, SignalIcon } from "./Icons.jsx";
 import { playPing } from "../sound.js";
-import leaderEldIcon from "../assets/leader-eld.svg";
 
 // Small inline notes input — saves on blur, syncs when Supabase data arrives.
 function NotesCell({ value, driverId, t }) {
@@ -142,7 +141,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
                 : cx(t.textMut, "border-transparent hover:bg-white/30"),
             )}
           >
-            <img src={leaderEldIcon} alt="ELD" width={16} height={16} draggable={false} className="rounded-[3px]" />
+            <SignalIcon size={15} className={cx(eldUrl && "signal-pulse")} />
           </button>
           <div className="min-w-0">
             <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>

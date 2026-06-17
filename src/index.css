@@ -181,6 +181,13 @@ select { appearance: auto; }
 .btn-press { transition: transform 70ms, opacity 0.12s; }
 .btn-press:active { transform: scale(0.95); }
 
+/* Live ELD signal — gentle breathing pulse when a link is connected. */
+@keyframes signalPulse {
+  0%,100% { opacity: 0.55; transform: scale(0.94); }
+  50%     { opacity: 1;    transform: scale(1.06); }
+}
+.signal-pulse { animation: signalPulse 1.9s ease-in-out infinite; transform-origin: center; }
+
 .row-fade { opacity: 0.26; transition: opacity 0.25s; }
 .row-fade:hover { opacity: 0.52; }
 

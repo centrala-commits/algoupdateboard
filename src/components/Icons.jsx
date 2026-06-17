@@ -102,6 +102,18 @@ export const LinkIcon = (p) => (
   </Svg>
 );
 
+// Live-signal icon — broadcast waves radiating from a center dot. Used on the
+// ELD-link button to evoke a live telematics feed.
+export const SignalIcon = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none" />
+    <path d="M8.8 8.8a4.5 4.5 0 0 0 0 6.4" />
+    <path d="M15.2 8.8a4.5 4.5 0 0 1 0 6.4" />
+    <path d="M6.3 6.3a8 8 0 0 0 0 11.4" />
+    <path d="M17.7 6.3a8 8 0 0 1 0 11.4" />
+  </Svg>
+);
+
 const SHIFT_ICONS = { Day: SunIcon, Main: CloudIcon, Night: MoonIcon };
 
 export function ShiftIcon({ shift, ...rest }) {
