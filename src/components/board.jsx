@@ -10,7 +10,7 @@ import {
 } from "../data.js";
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
-import { ShiftIcon, TrashIcon, TruckIcon } from "./Icons.jsx";
+import { ShiftIcon, TrashIcon, LinkIcon } from "./Icons.jsx";
 import { playPing } from "../sound.js";
 
 // Small inline notes input — saves on blur, syncs when Supabase data arrives.
@@ -141,7 +141,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
                 : cx(t.textMut, "border-transparent hover:bg-white/30"),
             )}
           >
-            <TruckIcon size={15} />
+            <LinkIcon size={15} />
           </button>
           <div className="min-w-0">
             <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>
