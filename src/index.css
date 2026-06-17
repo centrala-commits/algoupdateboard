@@ -41,8 +41,8 @@ select { appearance: auto; }
 /* Midnight Slate ground (#0F172A) — deep, serious canvas with Electric Teal glows. */
 .app-bg-dark {
   background:
-    radial-gradient(1100px 680px at 82% -12%, rgba(14,165,233,0.18), transparent 60%),
-    radial-gradient(900px 600px at -5% 108%, rgba(14,165,233,0.10), transparent 55%),
+    radial-gradient(1100px 680px at 82% -12%, rgba(99,102,241,0.20), transparent 60%),
+    radial-gradient(900px 600px at -5% 108%, rgba(99,102,241,0.10), transparent 55%),
     linear-gradient(160deg, #0F172A 0%, #111B30 55%, #0B1220 100%);
   background-attachment: fixed;
 }
@@ -58,15 +58,17 @@ select { appearance: auto; }
     inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-/* Deep navy header (#0B1220) — the app's anchor bar. */
+/* Frosted white glass header (restored). */
 .glass-header-light {
-  background: #0B1220;
-  border-bottom: 1px solid #1E293B;
-  box-shadow: 0 2px 14px rgba(11,18,32,0.25);
+  background: rgba(255,255,255,0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid #E2E8F0;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.70), 0 2px 14px rgba(15,23,42,0.06);
 }
 
 .glass-header-dark {
-  background: linear-gradient(90deg, rgba(14,165,233,0.14) 0%, rgba(15,23,42,0.66) 45%);
+  background: linear-gradient(90deg, rgba(99,102,241,0.16) 0%, rgba(15,23,42,0.66) 45%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
           backdrop-filter: blur(16px) saturate(150%);
   border-bottom: 1px solid rgba(51,65,85,0.90);
@@ -102,11 +104,13 @@ select { appearance: auto; }
     inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-/* Icon chips sit on the navy header — keep them near-white so dark glyphs read. */
+/* Frosted icon chips on the light glass header. */
 .glass-icon {
-  background: rgba(255,255,255,0.90);
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 1px 3px rgba(11,18,32,0.25);
+  background: rgba(255,255,255,0.55);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+          backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(226,232,240,0.80);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 1px 4px rgba(15,23,42,0.07);
 }
 
 .glass-icon-dark {
@@ -128,12 +132,12 @@ select { appearance: auto; }
 }
 
 .logo-mark-light {
-  filter: blur(5px) drop-shadow(0 0 40px rgba(2,132,199,0.20));
+  filter: blur(5px) drop-shadow(0 0 40px rgba(99,102,241,0.22));
   animation: heartbeat 6s ease-in-out infinite;
 }
 
 .logo-mark-dark {
-  filter: blur(5px) brightness(1.5) saturate(1.2) drop-shadow(0 0 50px rgba(14,165,233,0.30));
+  filter: blur(5px) brightness(1.5) saturate(1.2) drop-shadow(0 0 50px rgba(129,140,248,0.32));
   animation: heartbeat 6s ease-in-out infinite;
 }
 

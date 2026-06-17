@@ -3,10 +3,14 @@ import { authenticate } from "../auth.js";
 import { THEME } from "../theme.js";
 import { cx } from "../data.js";
 import { WindowDecor, HeaderBubbles } from "./ui.jsx";
-
-const t = THEME.light;
+import { SunIcon, MoonIcon } from "./Icons.jsx";
+import logoSvg from "../assets/algo-logo.svg";
 
 export function Login({ onLogin }) {
+  // Login has its own light/dark toggle (it renders before the AppProvider).
+  const [isDark, setIsDark] = useState(false);
+  const t = THEME[isDark ? "dark" : "light"];
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,23 +33,47 @@ export function Login({ onLogin }) {
 
   return (
     <div className={cx("min-h-screen relative flex items-center justify-center overflow-hidden", t.appBg)}>
-      {/* drifting orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute rounded-full blur-3xl bg-emerald-400/18 orb-drift" style={{ width: 600, height: 600, top: "-12%", left: "-6%" }} />
-        <div
-          className="absolute rounded-full blur-3xl bg-violet-400/16"
-          style={{ width: 480, height: 480, bottom: "-10%", right: "-8%", animation: "orbDrift 24s ease-in-out infinite reverse" }}
+      {/* Dashboard-style giant logo watermark, centred behind everything */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden" aria-hidden="true">
+        <img
+          src={logoSvg}
+          alt=""
+          draggable={false}
+          className={isDark ? "logo-mark-dark" : "logo-mark-light"}
+          style={{ width: "clamp(420px, 58vw, 820px)", height: "auto" }}
         />
       </div>
+
+      {/* drifting indigo orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute rounded-full blur-3xl orb-drift"
+          style={{ width: 600, height: 600, top: "-12%", left: "-6%", background: "rgba(99,102,241,0.18)" }}
+        />
+        <div
+          className="absolute rounded-full blur-3xl"
+          style={{ width: 480, height: 480, bottom: "-10%", right: "-8%", background: "rgba(129,140,248,0.16)", animation: "orbDrift 24s ease-in-out infinite reverse" }}
+        />
+      </div>
+
+      {/* Light / dark toggle */}
+      <button
+        onClick={() => setIsDark((v) => !v)}
+        className={cx("fixed top-4 right-4 z-20 w-9 h-9 rounded-lg flex items-center justify-center btn-press", t.glassIcon, t.textPri)}
+        title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        aria-label="Toggle colour theme"
+      >
+        {isDark ? <SunIcon size={19} /> : <MoonIcon size={19} />}
+      </button>
 
       <div className={cx("relative w-full max-w-sm mx-4 rounded-2xl shadow-2xl modal-pop overflow-hidden", t.modalCls)}>
         <WindowDecor accent={t.accent} />
 
-        <div className={cx("relative flex items-center gap-2 px-5 py-3 overflow-hidden", t.blockHd)}>
+        <div className={cx("relative flex items-center gap-2.5 px-5 py-3.5 overflow-hidden", t.blockHd)}>
           <span className={t.sheen} />
           <HeaderBubbles color={t.accent} />
-          <span className="relative z-10 font-black text-base tracking-tighter text-slate-900">AG</span>
-          <span className="relative z-10 text-xs font-semibold text-slate-500">Dispatch · Logistics Control</span>
+          <img src={logoSvg} alt="ALGO" draggable={false} className="relative z-10 h-7 w-auto" />
+          <span className={cx("relative z-10 text-xs font-semibold", t.textSec)}>Dispatch · Logistics Control</span>
         </div>
 
         <form onSubmit={submit} className="relative z-10 p-5 space-y-3">
