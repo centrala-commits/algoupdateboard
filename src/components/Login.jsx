@@ -2,7 +2,6 @@ import { useState } from "react";
 import { authenticate } from "../auth.js";
 import { THEME } from "../theme.js";
 import { cx } from "../data.js";
-import { WindowDecor, HeaderBubbles } from "./ui.jsx";
 import { SunIcon, MoonIcon } from "./Icons.jsx";
 import logoSvg from "../assets/algo-logo.svg";
 
@@ -44,15 +43,15 @@ export function Login({ onLogin }) {
         />
       </div>
 
-      {/* drifting indigo orbs */}
+      {/* soft blue glow corners */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div
-          className="absolute rounded-full blur-3xl orb-drift"
-          style={{ width: 600, height: 600, top: "-12%", left: "-6%", background: "rgba(99,102,241,0.18)" }}
+          className="absolute rounded-full blur-3xl"
+          style={{ width: 560, height: 560, top: "-14%", left: "-8%", background: "rgba(2,132,199,0.14)" }}
         />
         <div
           className="absolute rounded-full blur-3xl"
-          style={{ width: 480, height: 480, bottom: "-10%", right: "-8%", background: "rgba(129,140,248,0.16)", animation: "orbDrift 24s ease-in-out infinite reverse" }}
+          style={{ width: 460, height: 460, bottom: "-12%", right: "-8%", background: "rgba(14,165,233,0.12)" }}
         />
       </div>
 
@@ -67,16 +66,12 @@ export function Login({ onLogin }) {
       </button>
 
       <div className={cx("relative w-full max-w-sm mx-4 rounded-2xl shadow-2xl modal-pop overflow-hidden", t.modalCls)}>
-        <WindowDecor accent={t.accent} />
-
-        <div className={cx("relative flex items-center gap-2.5 px-5 py-3.5 overflow-hidden", t.blockHd)}>
-          <span className={t.sheen} />
-          <HeaderBubbles color={t.accent} />
-          <img src={logoSvg} alt="ALGO" draggable={false} className="relative z-10 h-7 w-auto" />
-          <span className={cx("relative z-10 text-xs font-semibold", t.textSec)}>Dispatch · Logistics Control</span>
+        <div className={cx("flex items-center gap-2.5 px-5 py-3.5", t.blockHd)}>
+          <img src={logoSvg} alt="ALGO" draggable={false} className="h-7 w-auto" />
+          <span className={cx("text-xs font-semibold", t.textSec)}>Dispatch · Logistics Control</span>
         </div>
 
-        <form onSubmit={submit} className="relative z-10 p-5 space-y-3">
+        <form onSubmit={submit} className="p-5 space-y-3">
           <div>
             <h1 className={cx("text-base font-bold", t.textPri)}>Sign in</h1>
             <p className={cx("text-xs", t.textSec)}>Private dispatch board — authorized users only.</p>
