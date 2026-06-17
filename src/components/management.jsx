@@ -290,8 +290,8 @@ function SuggestionsBox({ t }) {
 
   const sendTelegram = () => {
     const msg = text.trim()
-      ? `Suggestion for AG Dispatch board:\n\n${text.trim()}`
-      : "Hi! I have a suggestion for the AG Dispatch board:";
+      ? `Suggestion for the ALGO ELD Update Board:\n\n${text.trim()}`
+      : "Hi! I have a suggestion for the ALGO ELD Update Board:";
     window.open(`https://t.me/${TELEGRAM_HANDLE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
   };
 

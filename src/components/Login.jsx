@@ -68,13 +68,13 @@ export function Login({ onLogin }) {
       <div className={cx("relative w-full max-w-sm mx-4 rounded-2xl shadow-2xl modal-pop overflow-hidden", t.modalCls)}>
         <div className={cx("flex items-center gap-2.5 px-5 py-3.5", t.blockHd)}>
           <img src={logoSvg} alt="ALGO" draggable={false} className="h-7 w-auto" />
-          <span className={cx("text-xs font-semibold", t.textSec)}>Dispatch · Logistics Control</span>
+          <span className={cx("text-xs font-semibold", t.textSec)}>ELD Update Board System</span>
         </div>
 
         <form onSubmit={submit} className="p-5 space-y-3">
           <div>
             <h1 className={cx("text-base font-bold", t.textPri)}>Sign in</h1>
-            <p className={cx("text-xs", t.textSec)}>Private dispatch board — authorized users only.</p>
+            <p className={cx("text-xs", t.textSec)}>Private ELD update board — authorized users only.</p>
           </div>
 
           <div>

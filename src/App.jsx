@@ -14,6 +14,7 @@ import {
   AddDriverModal,
   DeleteCompanyModal,
   DeleteDriverModal,
+  ContactInfoModal,
 } from "./components/modals.jsx";
 
 function Shell({ user, onLogout }) {
@@ -43,6 +44,7 @@ function Shell({ user, onLogout }) {
       {modal?.type === "addDriver" && <AddDriverModal t={t} defaultCompanyId={modal.companyId} onClose={closeModal} />}
       {modal?.type === "deleteCompany" && <DeleteCompanyModal t={t} company={modal.company} onClose={closeModal} />}
       {modal?.type === "deleteDriver" && <DeleteDriverModal t={t} driver={modal.driver} companyName={modal.companyName} onClose={closeModal} />}
+      {modal?.type === "contactInfo" && <ContactInfoModal t={t} driverId={modal.driverId} driverName={modal.driverName} onClose={closeModal} />}
 
       <footer className="fixed bottom-0 left-0 z-30 pointer-events-none">
         <p className={cx("text-[10px] px-2.5 py-1 opacity-55 select-none tracking-wide font-medium", t.textSec)}>Created &amp; Designed By Nura ( Norris )</p>

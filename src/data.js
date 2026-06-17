@@ -169,3 +169,32 @@ export function serializeMeta(meta) {
   if (meta.tg) out.tg = meta.tg;
   return Object.keys(out).length ? JSON.stringify(out) : "";
 }
+
+// ---------------------------------------------------------------------------
+// Contact-info envelope stored as a JSON string inside meta.tg.
+// Fields: handle (Telegram @username / tg-phone), phone (regular), note (text).
+// Legacy rows that stored a plain string are treated as { handle: <string> }.
+// ---------------------------------------------------------------------------
+export function parseTgInfo(tg) {
+  if (!tg) return { handle: "", phone: "", note: "" };
+  const s = String(tg).trim();
+  if (s.startsWith("{")) {
+    try {
+      const p = JSON.parse(s);
+      return { handle: p.handle || "", phone: p.phone || "", note: p.note || "" };
+    } catch {}
+  }
+  return { handle: s, phone: "", note: "" };
+}
+
+export function serializeTgInfo({ handle = "", phone = "", note = "" }) {
+  const h = handle.trim();
+  const p = phone.trim();
+  const n = note.trim();
+  if (!h && !p && !n) return "";
+  const obj = {};
+  if (h) obj.handle = h.startsWith("@") ? h : `@${h}`;
+  if (p) obj.phone = p;
+  if (n) obj.note = n;
+  return JSON.stringify(obj);
+}

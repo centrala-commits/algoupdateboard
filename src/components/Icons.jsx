@@ -120,6 +120,14 @@ export const PencilIcon = (p) => (
   </Svg>
 );
 
+// Paper-plane (used for the Telegram / contact button).
+export const TelegramIcon = (p) => (
+  <Svg {...p}>
+    <path d="M22 2 11 13" />
+    <path d="M22 2 15 22l-4-9-9-4 20-7z" />
+  </Svg>
+);
+
 const SHIFT_ICONS = { Day: SunIcon, Main: CloudIcon, Night: MoonIcon };
 
 export function ShiftIcon({ shift, ...rest }) {

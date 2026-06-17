@@ -11,6 +11,7 @@ import {
   nowTime,
   parseMeta,
   serializeMeta,
+  parseTgInfo,
 } from "../data.js";
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
@@ -51,7 +52,7 @@ function NotesCell({ value, driverId, t }) {
 // One driver row.
 // ---------------------------------------------------------------------------
 const DriverRow = memo(function DriverRow({ driver, t }) {
-  const { currentUpdater, updateDriver, bumpLog, updaters, assignDriverUpdater, soundOn, isDark } = useApp();
+  const { currentUpdater, updateDriver, bumpLog, updaters, assignDriverUpdater, soundOn, isDark, setModal } = useApp();
 
   // Marking reviewed (with an updater selected) attributes the row to that
   // updater and logs one update. Un-checking just clears the flag — it does not
@@ -124,26 +125,12 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
   const resourcesOk = meta.res !== false;
   const toggleResources = useCallback(() => setMeta({ res: !resourcesOk }), [resourcesOk, setMeta]);
 
-  // Telegram / contact for the driver — kept while the driver exists.
-  const tg = meta.tg ?? "";
-  const openTg = useCallback(() => {
-    if (!tg) {
-      const v = window.prompt(`Telegram / contact for ${driver.name} (@handle, phone, or notes):`, "");
-      if (v && v.trim()) setMeta({ tg: v.trim() });
-      return;
-    }
-    const handle = tg.replace(/^@/, "");
-    if (/^https?:\/\//i.test(tg)) window.open(tg, "_blank", "noopener");
-    else if (/^[A-Za-z0-9_]{4,32}$/.test(handle)) window.open(`https://t.me/${handle}`, "_blank", "noopener");
-    else {
-      const v = window.prompt(`Telegram / contact for ${driver.name}:`, tg);
-      if (v !== null) setMeta({ tg: v.trim() });
-    }
-  }, [tg, driver.name, setMeta]);
-  const editTg = useCallback(() => {
-    const v = window.prompt(`Telegram / contact for ${driver.name} (clear to remove):`, tg);
-    if (v !== null) setMeta({ tg: v.trim() });
-  }, [tg, driver.name, setMeta]);
+  // Telegram / contact — parsed into { handle, phone, note } for display.
+  const tgInfo = useMemo(() => parseTgInfo(meta.tg), [meta.tg]);
+  const hasTgInfo = !!(tgInfo.handle || tgInfo.phone || tgInfo.note);
+  const tgTitle = hasTgInfo
+    ? [tgInfo.handle, tgInfo.phone, tgInfo.note].filter(Boolean).join(" · ")
+    : "Click to add contact info";
 
   // A driver assigned to someone since removed from the roster — keep showing them.
   const orphan = driver.updatedBy && !updaters.some((u) => u.nickname === driver.updatedBy);
@@ -189,12 +176,11 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
               <SignalIcon size={15} className={cx(eldUrl && "signal-pulse")} />
             </button>
             <button
-              onClick={openTg}
-              onDoubleClick={editTg}
-              title={tg ? `Contact: ${tg}  (double-click to edit)` : "Click to add a Telegram / contact"}
+              onClick={() => setModal({ type: "contactInfo", driverId: driver.id, driverName: driver.name })}
+              title={tgTitle}
               className={cx(
                 "w-6 h-6 flex items-center justify-center rounded-md btn-press border",
-                tg
+                hasTgInfo
                   ? "text-sky-600 border-sky-500/40 bg-sky-500/10 hover:bg-sky-500/20"
                   : cx(t.textMut, "border-transparent hover:bg-black/5"),
               )}

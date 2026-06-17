@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useApp } from "../store.jsx";
-import { SHIFTS, SHIFT_STYLE, cx } from "../data.js";
-import { ShiftIcon, BoltIcon } from "./Icons.jsx";
+import { SHIFTS, SHIFT_STYLE, cx, parseMeta, serializeMeta, parseTgInfo, serializeTgInfo } from "../data.js";
+import { ShiftIcon, BoltIcon, TelegramIcon } from "./Icons.jsx";
 
 // Shared modal shell: overlay + rounded window, no entry animation.
 function ModalShell({ t, size = "max-w-sm", children }) {
@@ -326,6 +326,108 @@ export function AddCompanyModal({ t, defaultBoard, onClose }) {
           </button>
         </div>
       </form>
+    </ModalShell>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Contact Info — Telegram handle, phone number, and notes for one driver.
+// ---------------------------------------------------------------------------
+export function ContactInfoModal({ t, driverId, driverName, onClose }) {
+  const { drivers, updateDriver } = useApp();
+  const driver = drivers.find((d) => d.id === driverId);
+  const meta = useMemo(() => parseMeta(driver?.notes), [driver?.notes]);
+  const tgInfo = useMemo(() => parseTgInfo(meta.tg), [meta.tg]);
+
+  const [handle, setHandle] = useState(tgInfo.handle);
+  const [phone, setPhone] = useState(tgInfo.phone);
+  const [note, setNote] = useState(tgInfo.note);
+
+  const inputCls = cx("w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2", t.inputCls);
+  const labelCls = cx("block text-xs font-semibold mb-1", t.formLabel);
+
+  const save = useCallback(() => {
+    const newTg = serializeTgInfo({ handle, phone, note });
+    updateDriver(driverId, { notes: serializeMeta({ ...meta, tg: newTg }) });
+    onClose();
+  }, [handle, phone, note, meta, driverId, updateDriver, onClose]);
+
+  const clearAll = useCallback(() => {
+    updateDriver(driverId, { notes: serializeMeta({ ...meta, tg: "" }) });
+    onClose();
+  }, [meta, driverId, updateDriver, onClose]);
+
+  const openTelegram = useCallback(() => {
+    const h = handle.trim().replace(/^@/, "");
+    if (/^[A-Za-z0-9_]{4,32}$/.test(h))
+      window.open(`https://t.me/${h}`, "_blank", "noopener");
+    else if (/^\+?\d[\d\s\-().]{6,}$/.test(handle.trim()))
+      window.open(`https://t.me/+${handle.trim().replace(/\D/g, "")}`, "_blank", "noopener");
+  }, [handle]);
+
+  const hasAny = !!(handle.trim() || phone.trim() || note.trim());
+
+  return (
+    <ModalShell t={t} size="max-w-xs">
+      <div className={cx("flex items-center gap-2.5 px-5 py-3", t.blockHd)}>
+        <TelegramIcon size={15} />
+        <span className="font-bold text-sm truncate">Contact — {driverName}</span>
+      </div>
+      <div className="p-5 space-y-3">
+        <div>
+          <label className={labelCls}>Telegram handle</label>
+          <input
+            type="text"
+            autoFocus
+            value={handle}
+            onChange={(e) => setHandle(e.target.value)}
+            placeholder="@username or +1234567890"
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Phone number</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+1 (555) 000-0000"
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Notes</label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Any other contact info…"
+            rows={2}
+            className={cx(inputCls, "resize-none")}
+          />
+        </div>
+        <div className="flex gap-2 pt-1">
+          {handle.trim() && (
+            <button
+              type="button"
+              onClick={openTelegram}
+              className="py-2 px-3 rounded-lg font-bold text-sm btn-press bg-sky-500 hover:bg-sky-600 text-white shrink-0"
+            >
+              Open ↗
+            </button>
+          )}
+          <button type="button" onClick={save} className={cx("flex-1 py-2 rounded-lg font-bold text-sm btn-press", t.btnPri)}>
+            Save
+          </button>
+          <button type="button" onClick={onClose} className={cx("py-2 px-3 rounded-lg font-bold text-sm btn-press", t.btnSec)}>
+            Cancel
+          </button>
+        </div>
+        {hasAny && (
+          <button type="button" onClick={clearAll} className={cx("w-full py-1.5 text-xs rounded-lg btn-press", t.btnDanger)}>
+            Clear contact info
+          </button>
+        )}
+      </div>
     </ModalShell>
   );
 }
