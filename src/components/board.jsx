@@ -141,7 +141,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
                 : cx(t.textMut, "border-transparent hover:bg-white/30"),
             )}
           >
-            <LinkIcon size={15} />
+            <Image src="/leader-icon.svg" alt="ELD" width={14} height={14} />
           </button>
           <div className="min-w-0">
             <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>
