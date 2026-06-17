@@ -237,6 +237,40 @@ export function DeleteCompanyModal({ t, company, onClose }) {
 }
 
 // ---------------------------------------------------------------------------
+// Delete Driver — confirm removing a single driver from a company.
+// ---------------------------------------------------------------------------
+export function DeleteDriverModal({ t, driver, companyName, onClose }) {
+  const { removeDriver } = useApp();
+
+  const confirm = () => {
+    removeDriver(driver.id);
+    onClose();
+  };
+
+  return (
+    <ModalShell t={t} size="max-w-xs">
+      <div className="p-5">
+        <p className={cx("text-sm font-semibold mb-1.5", t.textPri)}>
+          Remove <span className="text-rose-600">{driver.name}</span>
+          {driver.truck ? <span className={t.textMut}> ({driver.truck})</span> : null}?
+        </p>
+        <p className={cx("text-xs mb-4", t.textSec)}>
+          This deletes the driver{companyName ? ` from ${companyName}` : ""}. This cannot be undone.
+        </p>
+        <div className="flex gap-2">
+          <button onClick={confirm} className={cx("flex-1 py-2 rounded-lg font-bold text-sm btn-press", t.btnDanger)}>
+            Delete
+          </button>
+          <button onClick={onClose} className={cx("flex-1 py-2 rounded-lg font-semibold text-sm btn-press", t.btnSec)}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Add Company (quick modal from a board).
 // ---------------------------------------------------------------------------
 export function AddCompanyModal({ t, defaultBoard, onClose }) {

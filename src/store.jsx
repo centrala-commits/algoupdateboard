@@ -14,6 +14,7 @@ import {
   dbDeleteCompany,
   dbAddDriver,
   dbUpdateDriver,
+  dbDeleteDriver,
   dbAddUpdater,
   dbDeleteUpdater,
   dbAssignDrivers,
@@ -34,6 +35,21 @@ function localLoad(key, fallback) {
 export function AppProvider({ children }) {
   const [isDark, setIsDark] = useState(false);
   const t = THEME[isDark ? "dark" : "light"];
+
+  // Optional click sound when marking a driver reviewed (persisted locally).
+  const [soundOn, setSoundOn] = useState(() => localLoad("agb_sound", false));
+  useEffect(() => { localStorage.setItem("agb_sound", JSON.stringify(soundOn)); }, [soundOn]);
+
+  // Local suggestion box (kept on this device only — see ManagementView).
+  const [suggestions, setSuggestions] = useState(() => localLoad("agb_suggestions", []));
+  useEffect(() => { localStorage.setItem("agb_suggestions", JSON.stringify(suggestions)); }, [suggestions]);
+  const addSuggestion = useCallback((text, author) => {
+    const entry = { id: Date.now(), text, author: author || "Anonymous", at: nowTime() };
+    setSuggestions((list) => [entry, ...list]);
+  }, []);
+  const removeSuggestion = useCallback((id) => {
+    setSuggestions((list) => list.filter((s) => s.id !== id));
+  }, []);
 
   const [activeTab, setActiveTab] = useState("A");
   // With Supabase configured we start empty and load from the DB; otherwise we
@@ -245,6 +261,12 @@ export function AppProvider({ children }) {
     }
   }, []);
 
+  // Delete a single driver (DB row + local state).
+  const removeDriver = useCallback((id) => {
+    setDrivers((list) => list.filter((d) => d.id !== id));
+    if (dbEnabled) dbDeleteDriver(id).catch((e) => console.error("removeDriver:", e));
+  }, []);
+
   // --- updaters (a.k.a. shift responsibles) ----------------------------------
   const addUpdater = useCallback(async ({ nickname, shift }) => {
     if (dbEnabled) {
@@ -272,6 +294,11 @@ export function AppProvider({ children }) {
       t,
       isDark,
       setIsDark,
+      soundOn,
+      setSoundOn,
+      suggestions,
+      addSuggestion,
+      removeSuggestion,
       activeTab,
       setActiveTab,
       activeBoard,
@@ -300,13 +327,15 @@ export function AppProvider({ children }) {
       addCompany,
       removeCompany,
       addDriver,
+      removeDriver,
       closeModal,
     }),
     [
-      t, isDark, activeTab, activeBoard, companies, drivers, updaters, currentUpdater,
+      t, isDark, soundOn, suggestions, addSuggestion, removeSuggestion,
+      activeTab, activeBoard, companies, drivers, updaters, currentUpdater,
       activityLog, modal, serverOnline, loading, addUpdater, removeUpdater, updateDriver,
       assignDriverUpdater, assignAllOnBoard, assignCompanyDrivers, resetBoardReviewed,
-      bumpLog, addCompany, removeCompany, addDriver, closeModal,
+      bumpLog, addCompany, removeCompany, addDriver, removeDriver, closeModal,
     ],
   );
 

@@ -80,6 +80,20 @@ export const TruckIcon = (p) => (
   </Svg>
 );
 
+export const SoundOnIcon = (p) => (
+  <Svg {...p}>
+    <path d="M4 9v6h4l5 4V5L8 9H4z" />
+    <path d="M16.5 8.5a4 4 0 0 1 0 7M19 6a7 7 0 0 1 0 12" />
+  </Svg>
+);
+
+export const SoundOffIcon = (p) => (
+  <Svg {...p}>
+    <path d="M4 9v6h4l5 4V5L8 9H4z" />
+    <path d="M22 9l-5 6M17 9l5 6" />
+  </Svg>
+);
+
 const SHIFT_ICONS = { Day: SunIcon, Main: CloudIcon, Night: MoonIcon };
 
 export function ShiftIcon({ shift, ...rest }) {

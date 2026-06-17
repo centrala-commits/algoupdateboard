@@ -11,6 +11,7 @@ import {
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
 import { ShiftIcon, TrashIcon, TruckIcon } from "./Icons.jsx";
+import { playPing } from "../sound.js";
 
 // Small inline notes input — saves on blur, syncs when Supabase data arrives.
 function NotesCell({ value, driverId, t }) {
@@ -46,7 +47,7 @@ function NotesCell({ value, driverId, t }) {
 // One driver row.
 // ---------------------------------------------------------------------------
 const DriverRow = memo(function DriverRow({ driver, t }) {
-  const { currentUpdater, updateDriver, bumpLog, updaters, assignDriverUpdater } = useApp();
+  const { currentUpdater, updateDriver, bumpLog, updaters, assignDriverUpdater, soundOn } = useApp();
 
   // Marking reviewed (with an updater selected) attributes the row to that
   // updater and logs one update. Un-checking just clears the flag — it does not
@@ -54,13 +55,16 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
   // sentinel into updatedBy (that previously desynced the Updater <select>).
   const toggleReview = useCallback(() => {
     const next = !driver.isReviewed;
+    if (next && soundOn) playPing(); // tactile confirmation, opt-in
     if (next && currentUpdater) {
       updateDriver(driver.id, { isReviewed: true, updatedBy: currentUpdater.nickname, updatedAt: nowTime() });
       bumpLog(currentUpdater);
+    } else if (next) {
+      updateDriver(driver.id, { isReviewed: true, updatedAt: nowTime() });
     } else {
-      updateDriver(driver.id, { isReviewed: next });
+      updateDriver(driver.id, { isReviewed: false });
     }
-  }, [driver.id, driver.isReviewed, currentUpdater, updateDriver, bumpLog]);
+  }, [driver.id, driver.isReviewed, currentUpdater, updateDriver, bumpLog, soundOn]);
 
   const changeStatus = useCallback(
     (e) => {
@@ -142,6 +146,11 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
           <div className="min-w-0">
             <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>
             <div className={cx("text-xs font-mono tracking-wider", t.textMut)}>{driver.truck}</div>
+            {driver.updatedAt && (
+              <div className={cx("text-[10px] leading-tight mt-0.5", t.textMut)}>
+                Last updated {driver.updatedAt}
+              </div>
+            )}
           </div>
         </div>
       </td>
@@ -213,13 +222,20 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
   const { currentUpdater } = useApp();
   const reviewed = drivers.filter((d) => d.isReviewed).length;
   const pct = drivers.length ? Math.round((reviewed / drivers.length) * 100) : 0;
+  // Any unreviewed driver flagged "Need to check" makes the whole block glow amber.
+  const needsCheck = drivers.some((d) => d.status === "Need to check" && !d.isReviewed);
 
   return (
-    <div className={cx("mb-3 rounded-xl overflow-hidden", t.blockCls)}>
-      <div className={cx("flex items-center justify-between px-4 py-2.5 gap-3", t.blockHd)}>
+    <div className={cx("mb-3 rounded-xl overflow-hidden", t.blockCls, needsCheck && "hdr-amber-glow")}>
+      <div className={cx("flex items-center justify-between px-4 py-2.5 gap-3 relative", t.blockHd, needsCheck && "hdr-amber-bar")}>
         <div className="flex items-center gap-3 min-w-0">
           <span className="font-bold text-sm tracking-wide truncate">{company.name}</span>
           <span className="text-xs opacity-50 shrink-0">{drivers.length} drivers</span>
+          {needsCheck && (
+            <span className="text-xs bg-amber-500/20 text-amber-700 px-2 py-0.5 rounded-full font-semibold shrink-0 inline-flex items-center gap-1 amber-pulse">
+              ⚠ Needs check
+            </span>
+          )}
           {reviewed > 0 && (
             <span className="text-xs bg-emerald-500/15 text-emerald-600 px-2 py-0.5 rounded-full font-semibold shrink-0">
               {pct}% done

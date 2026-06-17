@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useApp } from "../store.jsx";
 import { SHIFTS, SHIFT_STYLE, cx } from "../data.js";
-import { ShiftIcon, UsersIcon, BoltIcon, SunIcon, MoonIcon } from "./Icons.jsx";
+import { ShiftIcon, UsersIcon, BoltIcon, SunIcon, MoonIcon, SoundOnIcon, SoundOffIcon } from "./Icons.jsx";
+import { playPing } from "../sound.js";
 import logoUrl from "../assets/algo-logo.svg";
 
 export function Header({ t, user, onLogout }) {
@@ -15,6 +16,8 @@ export function Header({ t, user, onLogout }) {
     serverOnline,
     isDark,
     setIsDark,
+    soundOn,
+    setSoundOn,
     companies,
     drivers,
     resetBoardReviewed,
@@ -144,6 +147,19 @@ export function Header({ t, user, onLogout }) {
               );
             })}
       </select>
+
+      {/* Sound ping toggle */}
+      <button
+        onClick={() => setSoundOn((v) => { const next = !v; if (next) playPing(); return next; })}
+        className={cx(
+          "w-9 h-9 rounded-lg flex items-center justify-center btn-press shrink-0",
+          t.glassIcon,
+          soundOn ? t.accentText : t.textMut,
+        )}
+        title={soundOn ? "Review sound: on (click to mute)" : "Review sound: off (click to enable)"}
+      >
+        {soundOn ? <SoundOnIcon size={19} /> : <SoundOffIcon size={19} />}
+      </button>
 
       {/* Dark mode toggle */}
       <button

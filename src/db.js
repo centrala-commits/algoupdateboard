@@ -92,6 +92,11 @@ export async function dbUpdateDriver(id, patch) {
   if (error) throw error;
 }
 
+export async function dbDeleteDriver(id) {
+  const { error } = await supabase.from("drivers").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function dbAddUpdater({ nickname, shift }) {
   const { data, error } = await supabase.from("updaters").insert({ nickname, shift }).select().single();
   if (error) throw error;

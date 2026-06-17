@@ -13,6 +13,7 @@ import {
   AddCompanyModal,
   AddDriverModal,
   DeleteCompanyModal,
+  DeleteDriverModal,
 } from "./components/modals.jsx";
 
 function Shell({ user, onLogout }) {
@@ -41,9 +42,10 @@ function Shell({ user, onLogout }) {
       {modal?.type === "addCompany" && <AddCompanyModal t={t} defaultBoard={modal.board} onClose={closeModal} />}
       {modal?.type === "addDriver" && <AddDriverModal t={t} defaultCompanyId={modal.companyId} onClose={closeModal} />}
       {modal?.type === "deleteCompany" && <DeleteCompanyModal t={t} company={modal.company} onClose={closeModal} />}
+      {modal?.type === "deleteDriver" && <DeleteDriverModal t={t} driver={modal.driver} companyName={modal.companyName} onClose={closeModal} />}
 
       <footer className="fixed bottom-0 left-0 z-30 pointer-events-none">
-        <p className={cx("text-[10px] px-2.5 py-1 opacity-55 select-none tracking-wide font-medium", t.textSec)}>Powered By Norris (Nura)</p>
+        <p className={cx("text-[10px] px-2.5 py-1 opacity-55 select-none tracking-wide font-medium", t.textSec)}>Created &amp; Designed By Nura ( Norris )</p>
       </footer>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useApp } from "../store.jsx";
-import { SHIFTS, SHIFT_STYLE, cx } from "../data.js";
-import { ShiftIcon } from "./Icons.jsx";
+import { SHIFTS, SHIFT_STYLE, STATUS_COLOR, cx } from "../data.js";
+import { ShiftIcon, TrashIcon } from "./Icons.jsx";
 
 // ---------------------------------------------------------------------------
 // Shift Responsibles manager.
@@ -105,6 +105,190 @@ function ShiftResponsibles({ t }) {
 }
 
 // ---------------------------------------------------------------------------
+// Driver roster manager — list every driver grouped by company, with a delete
+// button per row. Deletion is confirmed through the shared DeleteDriverModal.
+// ---------------------------------------------------------------------------
+function DriverManager({ t }) {
+  const { companies, drivers, setModal } = useApp();
+  const [boardFilter, setBoardFilter] = useState("all");
+  const [query, setQuery] = useState("");
+
+  const grouped = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return companies
+      .filter((c) => boardFilter === "all" || c.board === boardFilter)
+      .map((c) => ({
+        company: c,
+        rows: drivers.filter(
+          (d) =>
+            d.companyId === c.id &&
+            (!q || d.name.toLowerCase().includes(q) || (d.truck ?? "").toLowerCase().includes(q)),
+        ),
+      }))
+      .filter((g) => g.rows.length > 0);
+  }, [companies, drivers, boardFilter, query]);
+
+  return (
+    <div className={cx("relative overflow-hidden p-4", t.formCard)}>
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h3 className={cx("font-bold text-sm", t.textPri)}>Drivers — Remove from a Company</h3>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            {["all", "A", "B"].map((b) => (
+              <button
+                key={b}
+                type="button"
+                onClick={() => setBoardFilter(b)}
+                className={cx(
+                  "px-2.5 py-1 rounded-lg text-xs font-bold btn-press",
+                  boardFilter === b ? t.btnPri : t.btnSec,
+                )}
+              >
+                {b === "all" ? "All" : `Board ${b}`}
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            placeholder="Search name / truck…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className={cx("border rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:ring-2 w-44", t.inputCls)}
+          />
+        </div>
+      </div>
+
+      {grouped.length === 0 ? (
+        <p className={cx("relative z-10 text-xs italic", t.textMut)}>No drivers match.</p>
+      ) : (
+        <div className="relative z-10 space-y-4">
+          {grouped.map(({ company, rows }) => (
+            <div key={company.id}>
+              <div className={cx("flex items-center gap-2 mb-1.5")}>
+                <span className={cx("text-xs font-bold uppercase tracking-wider", t.textSec)}>{company.name}</span>
+                <span className={cx("text-xs", t.textMut)}>Board {company.board} · {rows.length}</span>
+              </div>
+              <div className="space-y-1">
+                {rows.map((d) => (
+                  <div
+                    key={d.id}
+                    className={cx("flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg", t.tblRow)}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={cx("font-semibold text-xs truncate", t.textPri)}>{d.name}</span>
+                      <span className={cx("text-xs font-mono", t.textMut)}>{d.truck}</span>
+                      <span className="text-xs font-semibold" style={{ color: STATUS_COLOR[d.status] }}>
+                        {d.status}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setModal({ type: "deleteDriver", driver: d, companyName: company.name })}
+                      title={`Remove ${d.name}`}
+                      className={cx("shrink-0 w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnDanger)}
+                    >
+                      <TrashIcon size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Suggestions box — anyone can drop an idea; it's kept on this device and can
+// also be sent straight to the maker on Telegram (@trusdedwho).
+// ---------------------------------------------------------------------------
+const TELEGRAM_HANDLE = "trusdedwho";
+
+function SuggestionsBox({ t }) {
+  const { suggestions, addSuggestion, removeSuggestion, currentUpdater } = useApp();
+  const [text, setText] = useState("");
+  const [flash, setFlash] = useState("");
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+    addSuggestion(text.trim(), currentUpdater?.nickname);
+    setText("");
+    setFlash("Saved!");
+    setTimeout(() => setFlash(""), 1800);
+  };
+
+  const sendTelegram = () => {
+    const msg = text.trim()
+      ? `Suggestion for AG Dispatch board:\n\n${text.trim()}`
+      : "Hi! I have a suggestion for the AG Dispatch board:";
+    window.open(`https://t.me/${TELEGRAM_HANDLE}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  };
+
+  return (
+    <div className={cx("relative overflow-hidden p-4", t.formCard)}>
+      <h3 className={cx("relative z-10 font-bold text-sm mb-1", t.textPri)}>Suggestions</h3>
+      <p className={cx("relative z-10 text-xs mb-3", t.textMut)}>
+        Got an idea to improve the board? Drop it here, or send it to me directly on Telegram.
+      </p>
+
+      <form onSubmit={submit} className="relative z-10 space-y-2 mb-3">
+        <textarea
+          rows={3}
+          placeholder="Your suggestion…"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className={cx("w-full border rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 resize-none", t.inputCls)}
+        />
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="submit" className={cx("px-3 py-1.5 rounded-lg font-semibold text-sm btn-press", t.btnGreen)}>
+            + Add suggestion
+          </button>
+          <button
+            type="button"
+            onClick={sendTelegram}
+            className={cx("px-3 py-1.5 rounded-lg font-semibold text-sm btn-press inline-flex items-center gap-1.5", t.btnSec)}
+            title={`Open Telegram chat with @${TELEGRAM_HANDLE}`}
+          >
+            ✈ Send on Telegram
+          </button>
+          <a
+            href={`https://t.me/${TELEGRAM_HANDLE}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cx("text-xs font-semibold", t.accentText)}
+          >
+            @{TELEGRAM_HANDLE}
+          </a>
+          {flash && <span className="text-emerald-500 text-xs font-semibold fade-in">{flash}</span>}
+        </div>
+      </form>
+
+      {suggestions.length > 0 && (
+        <div className="relative z-10 space-y-1.5 max-h-56 overflow-y-auto">
+          {suggestions.map((s) => (
+            <div key={s.id} className={cx("flex items-start justify-between gap-2 px-2.5 py-1.5 rounded-lg", t.tblRow)}>
+              <div className="min-w-0">
+                <p className={cx("text-xs whitespace-pre-wrap break-words", t.textPri)}>{s.text}</p>
+                <p className={cx("text-[10px] mt-0.5", t.textMut)}>{s.author} · {s.at}</p>
+              </div>
+              <button
+                onClick={() => removeSuggestion(s.id)}
+                title="Remove suggestion"
+                className="shrink-0 opacity-40 hover:opacity-90 text-base leading-none font-bold btn-press"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Full "Mgmt & Logs" tab.
 // ---------------------------------------------------------------------------
 export function ManagementView({ t }) {
@@ -153,6 +337,11 @@ export function ManagementView({ t }) {
   return (
     <div className="relative z-10 px-4 py-3 space-y-4">
       <ShiftResponsibles t={t} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DriverManager t={t} />
+        <SuggestionsBox t={t} />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="space-y-4">

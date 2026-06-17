@@ -25,16 +25,26 @@ select { appearance: auto; }
    LIQUID GLASS — neutral, professional, transparent
    =================================================================== */
 
+/* Softer, dimmer day ground — muted teal mist with gentle glows, so the glass
+   panels read clearly without the page feeling glary/over-bright. */
+.app-bg-light {
+  background:
+    radial-gradient(1100px 680px at 82% -12%, rgba(51,153,137,0.16), transparent 60%),
+    radial-gradient(900px 600px at -5% 108%, rgba(160,224,206,0.26), transparent 55%),
+    linear-gradient(160deg, #e9efec 0%, #e0ebe6 52%, #cfe3db 100%);
+  background-attachment: fixed;
+}
+
 .glass-light {
-  background: linear-gradient(145deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.40) 100%);
-  -webkit-backdrop-filter: blur(28px) saturate(150%) brightness(1.02);
-          backdrop-filter: blur(28px) saturate(150%) brightness(1.02);
-  border: 1px solid rgba(255,255,255,0.70);
+  background: linear-gradient(145deg, rgba(255,255,255,0.55) 0%, rgba(247,251,250,0.34) 100%);
+  -webkit-backdrop-filter: blur(30px) saturate(145%) brightness(0.99);
+          backdrop-filter: blur(30px) saturate(145%) brightness(0.99);
+  border: 1px solid rgba(255,255,255,0.60);
   box-shadow:
-    0 6px 24px rgba(15,28,40,0.12),
+    0 6px 24px rgba(15,28,40,0.13),
     0 1px 4px rgba(15,28,40,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.85),
-    inset 0 0 0 1px rgba(255,255,255,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    inset 0 0 0 1px rgba(255,255,255,0.24),
     0 0 0 1px rgba(15,28,40,0.06);
 }
 
@@ -60,11 +70,11 @@ select { appearance: auto; }
 }
 
 .glass-header-light {
-  background: rgba(255,255,255,0.48);
-  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.04);
-          backdrop-filter: blur(40px) saturate(180%) brightness(1.04);
-  border-bottom: 1px solid rgba(255,255,255,0.72);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.90), 0 2px 16px rgba(15,23,43,0.06);
+  background: rgba(247,251,250,0.44);
+  -webkit-backdrop-filter: blur(42px) saturate(165%) brightness(1.0);
+          backdrop-filter: blur(42px) saturate(165%) brightness(1.0);
+  border-bottom: 1px solid rgba(255,255,255,0.62);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.80), 0 2px 16px rgba(15,23,43,0.07);
 }
 
 .glass-header-dark {
@@ -89,10 +99,10 @@ select { appearance: auto; }
 }
 
 .glass-modal-light {
-  background: linear-gradient(150deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.36) 100%);
-  -webkit-backdrop-filter: blur(44px) saturate(180%) brightness(1.04);
-          backdrop-filter: blur(44px) saturate(180%) brightness(1.04);
-  border: 1px solid rgba(255,255,255,0.72);
+  background: linear-gradient(150deg, rgba(250,252,251,0.62) 0%, rgba(244,249,247,0.40) 100%);
+  -webkit-backdrop-filter: blur(46px) saturate(165%) brightness(1.0);
+          backdrop-filter: blur(46px) saturate(165%) brightness(1.0);
+  border: 1px solid rgba(255,255,255,0.66);
   box-shadow:
     0 20px 60px rgba(15,23,43,0.12),
     0 4px 12px rgba(15,23,43,0.05),
@@ -177,6 +187,31 @@ select { appearance: auto; }
 
 .row-fade { opacity: 0.26; transition: opacity 0.25s; }
 .row-fade:hover { opacity: 0.52; }
+
+/* ===================================================================
+   COMPANY BLOCK — amber "needs check" glow
+   =================================================================== */
+@keyframes amberBreathe {
+  0%,100% { box-shadow: 0 0 0 1px rgba(217,119,6,0.45), 0 0 16px rgba(245,158,11,0.22); }
+  50%     { box-shadow: 0 0 0 1px rgba(217,119,6,0.65), 0 0 26px rgba(245,158,11,0.40); }
+}
+.hdr-amber-glow {
+  animation: amberBreathe 2.8s ease-in-out infinite;
+  border-color: rgba(245,158,11,0.45) !important;
+}
+/* warm wash across the header strip itself */
+.hdr-amber-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.06) 55%, transparent 100%);
+}
+@keyframes amberPulse {
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0.55; }
+}
+.amber-pulse { animation: amberPulse 2.2s ease-in-out infinite; }
 
 a, select, input, textarea, tr, th, td {
   transition:
