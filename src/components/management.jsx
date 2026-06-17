@@ -3,6 +3,12 @@ import { useApp } from "../store.jsx";
 import { SHIFTS, SHIFT_STYLE, STATUS_COLOR, cx } from "../data.js";
 import { ShiftIcon, TrashIcon, PencilIcon } from "./Icons.jsx";
 
+const ROLE_PILL = {
+  admin:      "bg-violet-500/15 text-violet-700",
+  specialist: "bg-sky-500/15 text-sky-700",
+  updater:    "bg-amber-500/15 text-amber-700",
+};
+
 // ---------------------------------------------------------------------------
 // Shift Responsibles manager.
 //
@@ -358,18 +364,93 @@ function SuggestionsBox({ t }) {
 }
 
 // ---------------------------------------------------------------------------
+// User Accounts manager — admin only.
+// ---------------------------------------------------------------------------
+function AccountsManager({ t }) {
+  const { accounts, removeAccount, setModal, dbEnabled } = useApp();
+
+  if (!dbEnabled) {
+    return (
+      <div className={cx("relative overflow-hidden p-4", t.formCard)}>
+        <h3 className={cx("relative z-10 font-bold text-sm mb-1", t.textPri)}>User Accounts</h3>
+        <p className={cx("relative z-10 text-xs", t.textMut)}>
+          Account management requires Supabase to be configured (set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY).
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cx("relative overflow-hidden p-4", t.formCard)}>
+      <div className="relative z-10 flex items-center justify-between mb-3 gap-2">
+        <div>
+          <h3 className={cx("font-bold text-sm", t.textPri)}>User Accounts</h3>
+          <p className={cx("text-xs mt-0.5", t.textMut)}>
+            Accounts for Specialists and Updaters. Your admin account is separate (hardcoded).
+          </p>
+        </div>
+        <button
+          onClick={() => setModal({ type: "addAccount" })}
+          className={cx("px-3 py-1.5 rounded-lg font-semibold text-sm btn-press shrink-0", t.btnGreen)}
+        >
+          + Add Account
+        </button>
+      </div>
+
+      {accounts.length === 0 ? (
+        <p className={cx("relative z-10 text-xs italic", t.textMut)}>
+          No accounts yet. Add specialists or updaters above.
+        </p>
+      ) : (
+        <div className="relative z-10 space-y-1.5">
+          {accounts.map((a) => (
+            <div
+              key={a.id}
+              className={cx("flex items-center justify-between gap-3 px-3 py-2 rounded-lg", t.tblRow)}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className={cx("text-[11px] font-bold px-2 py-0.5 rounded-full capitalize shrink-0", ROLE_PILL[a.role] ?? ROLE_PILL.updater)}>
+                  {a.role}
+                </span>
+                <span className={cx("font-semibold text-sm truncate", t.textPri)}>{a.name}</span>
+                <span className={cx("text-xs font-mono shrink-0", t.textMut)}>@{a.username}</span>
+              </div>
+              <button
+                onClick={() => removeAccount(a.id)}
+                title={`Remove ${a.name}`}
+                className={cx("w-7 h-7 flex items-center justify-center rounded-lg btn-press shrink-0", t.btnDanger)}
+              >
+                <TrashIcon size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Full "Mgmt & Logs" tab — split into sections so it's not one long scroll.
 // ---------------------------------------------------------------------------
-const SECTIONS = [
+const ALL_SECTIONS = [
   { k: "drivers", l: "Drivers" },
   { k: "add", l: "Add Company / Driver" },
   { k: "team", l: "Team & Shifts" },
   { k: "activity", l: "Activity Log" },
   { k: "suggestions", l: "Suggestions" },
+  { k: "accounts", l: "Accounts" },
 ];
 
 export function ManagementView({ t }) {
-  const { companies, updaters, drivers, activityLog, addCompany, addDriver } = useApp();
+  const { companies, updaters, drivers, activityLog, addCompany, addDriver, user } = useApp();
+  const isAdmin = !user?.role || user?.role === "admin";
+  const isUpdater = user?.role === "updater";
+
+  const sections = useMemo(
+    () => ALL_SECTIONS.filter((s) => s.k !== "accounts" || isAdmin),
+    [isAdmin],
+  );
   const [section, setSection] = useState("drivers");
   const [companyForm, setCompanyForm] = useState({ name: "", board: "A" });
   const [driverForm, setDriverForm] = useState({ name: "", truck: "", companyId: "", eldId: "" });
@@ -415,7 +496,7 @@ export function ManagementView({ t }) {
   return (
     <div className="relative z-10 px-4 py-3 space-y-4">
       <div className={cx("flex flex-wrap gap-1.5 p-1.5", t.formCard)}>
-        {SECTIONS.map((s) => (
+        {sections.map((s) => (
           <button
             key={s.k}
             type="button"
@@ -434,10 +515,12 @@ export function ManagementView({ t }) {
       {section === "team" && <ShiftResponsibles t={t} />}
       {section === "suggestions" && <SuggestionsBox t={t} />}
 
+      {section === "accounts" && <AccountsManager t={t} />}
+
       {section === "add" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Add company */}
-          <div className={cx("relative overflow-hidden p-4", t.formCard)}>
+          {/* Add company — hidden for updaters */}
+          {!isUpdater && <div className={cx("relative overflow-hidden p-4", t.formCard)}>
             <h3 className={cx("relative z-10 font-bold text-sm mb-3", t.textPri)}>Add New Company</h3>
             <form onSubmit={submitCompany} className="relative z-10 space-y-3">
               <div>
@@ -476,7 +559,7 @@ export function ManagementView({ t }) {
                 {companyFlash && <span className="text-emerald-500 text-xs font-semibold fade-in">{companyFlash}</span>}
               </div>
             </form>
-          </div>
+          </div>}
 
           {/* Add driver */}
           <div className={cx("relative overflow-hidden p-4", t.formCard)}>

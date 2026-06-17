@@ -433,6 +433,125 @@ export function ContactInfoModal({ t, driverId, driverName, onClose }) {
 }
 
 // ---------------------------------------------------------------------------
+// Add Account — admin creates a new specialist or updater login.
+// ---------------------------------------------------------------------------
+export function AddAccountModal({ t, onClose }) {
+  const { addAccount } = useApp();
+  const [form, setForm] = useState({ name: "", username: "", password: "", role: "updater" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const inputCls = cx("w-full border rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2", t.inputCls);
+  const labelCls = cx("block text-xs font-semibold mb-1", t.formLabel);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.username.trim() || !form.password) return;
+    setLoading(true);
+    setError("");
+    try {
+      await addAccount({
+        username: form.username.trim(),
+        name: form.name.trim(),
+        password: form.password,
+        role: form.role,
+      });
+      onClose();
+    } catch (err) {
+      setError(
+        err?.message?.toLowerCase().includes("duplicate") || err?.code === "23505"
+          ? "Username already exists — pick a different one."
+          : "Failed to save. Check your Supabase connection and try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <ModalShell t={t} size="max-w-sm">
+      <ModalHeader t={t} title="Add User Account" onClose={onClose} />
+      <form onSubmit={submit} className="p-5 space-y-3">
+        <div>
+          <label className={labelCls}>Full Name</label>
+          <input
+            type="text"
+            autoFocus
+            placeholder="e.g., Sara Kim"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            className={inputCls}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Username</label>
+          <input
+            type="text"
+            placeholder="e.g., sarkim"
+            value={form.username}
+            onChange={(e) => setForm((f) => ({ ...f, username: e.target.value.toLowerCase().replace(/\s/g, "") }))}
+            className={inputCls}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Password</label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            value={form.password}
+            onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+            className={inputCls}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Role</label>
+          <div className="flex gap-2">
+            {["specialist", "updater"].map((r) => (
+              <button
+                type="button"
+                key={r}
+                onClick={() => setForm((f) => ({ ...f, role: r }))}
+                className={cx(
+                  "flex-1 py-2 rounded-lg font-bold text-sm btn-press capitalize",
+                  form.role === r ? t.btnPri : t.btnSec,
+                )}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+          <p className={cx("text-[11px] mt-1.5", t.textMut)}>
+            {form.role === "specialist"
+              ? "Can add / delete companies and drivers."
+              : "Can update driver statuses and notes only."}
+          </p>
+        </div>
+        {error && (
+          <p className="text-xs font-semibold text-rose-500 bg-rose-500/10 border border-rose-400/30 rounded-lg px-2.5 py-1.5">
+            {error}
+          </p>
+        )}
+        <div className="flex gap-2 pt-1">
+          <button
+            type="submit"
+            disabled={loading}
+            className={cx("flex-1 py-2 rounded-lg font-semibold text-sm btn-press", t.btnPri)}
+          >
+            {loading ? "Saving…" : "Add Account"}
+          </button>
+          <button type="button" onClick={onClose} className={cx("flex-1 py-2 rounded-lg font-semibold text-sm btn-press", t.btnSec)}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Add Driver (quick modal from a company card).
 // ---------------------------------------------------------------------------
 export function AddDriverModal({ t, defaultCompanyId, onClose }) {

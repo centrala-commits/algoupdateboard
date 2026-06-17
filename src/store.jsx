@@ -18,6 +18,9 @@ import {
   dbAddUpdater,
   dbDeleteUpdater,
   dbAssignDrivers,
+  dbLoadAccounts,
+  dbAddAccount,
+  dbDeleteAccount,
 } from "./db.js";
 
 const AppContext = createContext(null);
@@ -32,7 +35,7 @@ function localLoad(key, fallback) {
   }
 }
 
-export function AppProvider({ children }) {
+export function AppProvider({ children, user }) {
   const [isDark, setIsDark] = useState(false);
   const t = THEME[isDark ? "dark" : "light"];
 
@@ -287,6 +290,30 @@ export function AppProvider({ children }) {
     if (dbEnabled) dbDeleteUpdater(id).catch((e) => console.error("removeUpdater:", e));
   }, []);
 
+  // --- user accounts (admin only, Supabase) ----------------------------------
+  const [accounts, setAccounts] = useState([]);
+  const isAdmin = !user?.role || user?.role === "admin";
+
+  useEffect(() => {
+    if (!dbEnabled || !isAdmin) return;
+    let cancelled = false;
+    dbLoadAccounts()
+      .then((data) => { if (!cancelled) setAccounts(data); })
+      .catch((e) => console.error("loadAccounts:", e));
+    return () => { cancelled = true; };
+  }, [isAdmin]);
+
+  const addAccount = useCallback(async ({ username, name, password, role }) => {
+    const row = await dbAddAccount({ username, name, password, role });
+    setAccounts((list) => [...list, row]);
+    return row;
+  }, []);
+
+  const removeAccount = useCallback(async (id) => {
+    await dbDeleteAccount(id);
+    setAccounts((list) => list.filter((a) => a.id !== id));
+  }, []);
+
   const closeModal = useCallback(() => setModal(null), []);
 
   const value = useMemo(
@@ -329,6 +356,10 @@ export function AppProvider({ children }) {
       addDriver,
       removeDriver,
       closeModal,
+      user,
+      accounts,
+      addAccount,
+      removeAccount,
     }),
     [
       t, isDark, soundOn, suggestions, addSuggestion, removeSuggestion,
@@ -336,6 +367,7 @@ export function AppProvider({ children }) {
       activityLog, modal, serverOnline, loading, addUpdater, removeUpdater, updateDriver,
       assignDriverUpdater, assignAllOnBoard, assignCompanyDrivers, resetBoardReviewed,
       bumpLog, addCompany, removeCompany, addDriver, removeDriver, closeModal,
+      user, accounts, addAccount, removeAccount,
     ],
   );
 

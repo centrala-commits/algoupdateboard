@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { authenticate } from "../auth.js";
+import { authenticateAsync } from "../auth.js";
 import { THEME } from "../theme.js";
 import { cx } from "../data.js";
 import { SunIcon, MoonIcon } from "./Icons.jsx";
@@ -13,16 +13,22 @@ export function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    const user = authenticate(username, password);
-    if (!user) {
-      setError("Wrong username or password.");
-      return;
+    setLoading(true);
+    try {
+      const user = await authenticateAsync(username, password);
+      if (!user) {
+        setError("Wrong username or password.");
+        return;
+      }
+      setError("");
+      onLogin(user);
+    } finally {
+      setLoading(false);
     }
-    setError("");
-    onLogin(user);
   };
 
   const inputCls = cx(
@@ -116,8 +122,8 @@ export function Login({ onLogin }) {
             </p>
           )}
 
-          <button type="submit" className={cx("w-full py-2 rounded-lg font-bold text-sm btn-press", t.btnPri)}>
-            Sign in
+          <button type="submit" disabled={loading} className={cx("w-full py-2 rounded-lg font-bold text-sm btn-press", t.btnPri)}>
+            {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
       </div>

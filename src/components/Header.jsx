@@ -218,9 +218,24 @@ export function Header({ t, user, onLogout }) {
       {/* User / Logout */}
       {user && (
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className={cx("text-xs font-semibold hidden lg:inline", t.textSec)} title={`Signed in as ${user.username}`}>
+          <span
+            className={cx("text-xs font-semibold hidden lg:inline", t.textSec)}
+            title={`Signed in as ${user.username} · ${user.role ?? "admin"}`}
+          >
             {user.name || user.username}
           </span>
+          {user.role && user.role !== "admin" && (
+            <span
+              className={cx(
+                "text-[10px] font-bold px-1.5 py-0.5 rounded-full capitalize hidden xl:inline",
+                user.role === "specialist"
+                  ? "bg-sky-500/20 text-sky-700"
+                  : "bg-amber-500/20 text-amber-700",
+              )}
+            >
+              {user.role}
+            </span>
+          )}
           <button
             onClick={onLogout}
             className={cx("px-2.5 py-1 rounded-lg font-semibold text-xs btn-press", t.btnSec)}

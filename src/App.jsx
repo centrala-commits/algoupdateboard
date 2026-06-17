@@ -15,6 +15,7 @@ import {
   DeleteCompanyModal,
   DeleteDriverModal,
   ContactInfoModal,
+  AddAccountModal,
 } from "./components/modals.jsx";
 
 function Shell({ user, onLogout }) {
@@ -45,6 +46,7 @@ function Shell({ user, onLogout }) {
       {modal?.type === "deleteCompany" && <DeleteCompanyModal t={t} company={modal.company} onClose={closeModal} />}
       {modal?.type === "deleteDriver" && <DeleteDriverModal t={t} driver={modal.driver} companyName={modal.companyName} onClose={closeModal} />}
       {modal?.type === "contactInfo" && <ContactInfoModal t={t} driverId={modal.driverId} driverName={modal.driverName} onClose={closeModal} />}
+      {modal?.type === "addAccount" && <AddAccountModal t={t} onClose={closeModal} />}
 
       <footer className="fixed bottom-0 left-0 z-30 pointer-events-none">
         <p className={cx("text-[10px] px-2.5 py-1 opacity-55 select-none tracking-wide font-medium", t.textSec)}>Created &amp; Designed By Nura ( Norris )</p>
@@ -68,7 +70,7 @@ export default function App() {
   }
 
   return (
-    <AppProvider>
+    <AppProvider user={user}>
       <Shell
         user={user}
         onLogout={() => {

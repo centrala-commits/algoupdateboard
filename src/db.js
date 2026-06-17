@@ -117,3 +117,42 @@ export async function dbAssignDrivers(ids, { updatedBy, updatedAt }) {
     .in("id", ids);
   if (error) throw error;
 }
+
+// ---------------------------------------------------------------------------
+// user_accounts — login accounts managed by admin from the UI.
+// The admin's own account is hardcoded in auth.js and NOT stored here.
+// ---------------------------------------------------------------------------
+export async function dbLoadAccounts() {
+  const { data, error } = await supabase
+    .from("user_accounts")
+    .select("id, username, name, role, created_at")
+    .order("role")
+    .order("name");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function dbAddAccount({ username, name, password, role }) {
+  const { data, error } = await supabase
+    .from("user_accounts")
+    .insert({ username: username.trim().toLowerCase(), name: name.trim(), password, role })
+    .select("id, username, name, role, created_at")
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function dbDeleteAccount(id) {
+  const { error } = await supabase.from("user_accounts").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function dbAuthenticateAccount(username, password) {
+  const { data } = await supabase
+    .from("user_accounts")
+    .select("username, name, role")
+    .eq("username", username.trim().toLowerCase())
+    .eq("password", password)
+    .maybeSingle();
+  return data ?? null;
+}

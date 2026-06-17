@@ -301,7 +301,8 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
 // One company card (header + driver table).
 // ---------------------------------------------------------------------------
 const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriver, onDelete, onAssignCompany }) {
-  const { currentUpdater } = useApp();
+  const { currentUpdater, user } = useApp();
+  const isUpdater = user?.role === "updater";
   const reviewed = drivers.filter((d) => d.isReviewed).length;
   const pct = drivers.length ? Math.round((reviewed / drivers.length) * 100) : 0;
   // Any unreviewed driver flagged "Need to check" makes the whole block glow amber.
@@ -343,13 +344,15 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
           >
             + Driver
           </button>
-          <button
-            onClick={() => onDelete(company)}
-            title="Delete company"
-            className={cx("w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnDanger)}
-          >
-            <TrashIcon size={15} />
-          </button>
+          {!isUpdater && (
+            <button
+              onClick={() => onDelete(company)}
+              title="Delete company"
+              className={cx("w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnDanger)}
+            >
+              <TrashIcon size={15} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -388,7 +391,8 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
 // A board (A or B): shift-responsible pills + company cards.
 // ---------------------------------------------------------------------------
 export function BoardView({ board, t }) {
-  const { companies, drivers, setModal, updaters, assignCompanyDrivers, currentUpdater } = useApp();
+  const { companies, drivers, setModal, updaters, assignCompanyDrivers, currentUpdater, user } = useApp();
+  const isUpdater = user?.role === "updater";
   const boardCompanies = useMemo(() => companies.filter((c) => c.board === board), [companies, board]);
   const companyIds = useMemo(() => new Set(boardCompanies.map((c) => c.id)), [boardCompanies]);
   const driverCount = useMemo(
@@ -426,12 +430,14 @@ export function BoardView({ board, t }) {
             {boardCompanies.length} companies · {driverCount} drivers
           </p>
         </div>
-        <button
-          onClick={() => setModal({ type: "addCompany", board })}
-          className={cx("text-sm px-3 py-1.5 rounded-lg font-semibold btn-press", t.btnGreen)}
-        >
-          + Add Company
-        </button>
+        {!isUpdater && (
+          <button
+            onClick={() => setModal({ type: "addCompany", board })}
+            className={cx("text-sm px-3 py-1.5 rounded-lg font-semibold btn-press", t.btnGreen)}
+          >
+            + Add Company
+          </button>
+        )}
       </div>
 
       {boardCompanies.length === 0 ? (
