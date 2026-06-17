@@ -10,8 +10,9 @@ import {
 } from "../data.js";
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
-import { ShiftIcon, TrashIcon, LinkIcon } from "./Icons.jsx";
+import { ShiftIcon, TrashIcon } from "./Icons.jsx";
 import { playPing } from "../sound.js";
+import leaderEldIcon from "../assets/leader-eld.svg";
 
 // Small inline notes input — saves on blur, syncs when Supabase data arrives.
 function NotesCell({ value, driverId, t }) {
@@ -141,7 +142,7 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
                 : cx(t.textMut, "border-transparent hover:bg-white/30"),
             )}
           >
-            <Image src="https://drivehosinc-tenants-prod-s3.s3.us-east-1.amazonaws.com/tenants/97876a81-a038-4434-8e6d-b45da6450e41/Leader_40.svg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIAYOT2KMEFVGUB6QQB%2F20260617%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260617T111336Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=6884c6ff68cfb703fb5dd5ddb9488c8698e9087bc507565080950de3830e67d4" alt="ELD" width={14} height={14} />
+            <img src={leaderEldIcon} alt="ELD" width={16} height={16} draggable={false} className="rounded-[3px]" />
           </button>
           <div className="min-w-0">
             <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>
