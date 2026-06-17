@@ -9,10 +9,12 @@ import {
   STATUSES,
   cx,
   nowTime,
+  parseMeta,
+  serializeMeta,
 } from "../data.js";
 import { EldDot } from "./ui.jsx";
 import { DeliveryPicker } from "./DeliveryPicker.jsx";
-import { ShiftIcon, TrashIcon, SignalIcon } from "./Icons.jsx";
+import { ShiftIcon, TrashIcon, SignalIcon, TelegramIcon } from "./Icons.jsx";
 import { playPing } from "../sound.js";
 
 // Small inline notes input — saves on blur, syncs when Supabase data arrives.
@@ -95,21 +97,53 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
     [driver.id, updateDriver],
   );
 
-  // ELD link lives in the (repurposed) notes field. Click opens it; if none is
-  // set yet it prompts for one. Double-click always lets you edit/replace it.
-  const eldUrl = driver.notes ?? "";
+  // ELD link, Resources flag and Telegram contact all live in the `notes` field
+  // as a small JSON envelope (no DB migration needed — see data.js).
+  const meta = useMemo(() => parseMeta(driver.notes), [driver.notes]);
+  const setMeta = useCallback(
+    (patch) => updateDriver(driver.id, { notes: serializeMeta({ ...meta, ...patch }) }),
+    [meta, driver.id, updateDriver],
+  );
+
+  // ELD link — click opens it (prompts if none yet); double-click edits/replaces.
+  const eldUrl = meta.eld ?? "";
   const openEld = useCallback(() => {
     if (eldUrl) {
       window.open(/^https?:\/\//i.test(eldUrl) ? eldUrl : `https://${eldUrl}`, "_blank", "noopener");
     } else {
       const v = window.prompt(`Paste the ELD link for ${driver.name}:`, "");
-      if (v && v.trim()) updateDriver(driver.id, { notes: v.trim() });
+      if (v && v.trim()) setMeta({ eld: v.trim() });
     }
-  }, [eldUrl, driver.id, driver.name, updateDriver]);
+  }, [eldUrl, driver.name, setMeta]);
   const editEld = useCallback(() => {
     const v = window.prompt(`ELD link for ${driver.name} (clear to remove):`, eldUrl);
-    if (v !== null) updateDriver(driver.id, { notes: v.trim() });
-  }, [eldUrl, driver.id, driver.name, updateDriver]);
+    if (v !== null) setMeta({ eld: v.trim() });
+  }, [eldUrl, driver.name, setMeta]);
+
+  // Resources (paperlog / ELD manuals / tablet mount). Default = "All provided".
+  const resourcesOk = meta.res !== false;
+  const toggleResources = useCallback(() => setMeta({ res: !resourcesOk }), [resourcesOk, setMeta]);
+
+  // Telegram / contact for the driver — kept while the driver exists.
+  const tg = meta.tg ?? "";
+  const openTg = useCallback(() => {
+    if (!tg) {
+      const v = window.prompt(`Telegram / contact for ${driver.name} (@handle, phone, or notes):`, "");
+      if (v && v.trim()) setMeta({ tg: v.trim() });
+      return;
+    }
+    const handle = tg.replace(/^@/, "");
+    if (/^https?:\/\//i.test(tg)) window.open(tg, "_blank", "noopener");
+    else if (/^[A-Za-z0-9_]{4,32}$/.test(handle)) window.open(`https://t.me/${handle}`, "_blank", "noopener");
+    else {
+      const v = window.prompt(`Telegram / contact for ${driver.name}:`, tg);
+      if (v !== null) setMeta({ tg: v.trim() });
+    }
+  }, [tg, driver.name, setMeta]);
+  const editTg = useCallback(() => {
+    const v = window.prompt(`Telegram / contact for ${driver.name} (clear to remove):`, tg);
+    if (v !== null) setMeta({ tg: v.trim() });
+  }, [tg, driver.name, setMeta]);
 
   // A driver assigned to someone since removed from the roster — keep showing them.
   const orphan = driver.updatedBy && !updaters.some((u) => u.nickname === driver.updatedBy);
@@ -138,21 +172,36 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
         </button>
       </td>
 
-      <td className={cx("px-3 py-1.5 w-52", t.textPri)}>
+      <td className={cx("px-3 py-1.5 w-56", t.textPri)}>
         <div className="flex items-center gap-2 min-w-0">
-          <button
-            onClick={openEld}
-            onDoubleClick={editEld}
-            title={eldUrl ? `Open ELD: ${eldUrl}  (double-click to edit)` : "Click to add an ELD link"}
-            className={cx(
-              "shrink-0 w-6 h-6 flex items-center justify-center rounded-md btn-press border",
-              eldUrl
-                ? "text-emerald-600 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20"
-                : cx(t.textMut, "border-transparent hover:bg-white/30"),
-            )}
-          >
-            <SignalIcon size={15} className={cx(eldUrl && "signal-pulse")} />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={openEld}
+              onDoubleClick={editEld}
+              title={eldUrl ? `Open ELD: ${eldUrl}  (double-click to edit)` : "Click to add an ELD link"}
+              className={cx(
+                "w-6 h-6 flex items-center justify-center rounded-md btn-press border",
+                eldUrl
+                  ? "text-emerald-600 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20"
+                  : cx(t.textMut, "border-transparent hover:bg-black/5"),
+              )}
+            >
+              <SignalIcon size={15} className={cx(eldUrl && "signal-pulse")} />
+            </button>
+            <button
+              onClick={openTg}
+              onDoubleClick={editTg}
+              title={tg ? `Contact: ${tg}  (double-click to edit)` : "Click to add a Telegram / contact"}
+              className={cx(
+                "w-6 h-6 flex items-center justify-center rounded-md btn-press border",
+                tg
+                  ? "text-sky-600 border-sky-500/40 bg-sky-500/10 hover:bg-sky-500/20"
+                  : cx(t.textMut, "border-transparent hover:bg-black/5"),
+              )}
+            >
+              <TelegramIcon size={14} />
+            </button>
+          </div>
           <div className="min-w-0">
             <div className="font-semibold text-sm leading-snug truncate">{driver.name}</div>
             <div className={cx("text-xs font-mono tracking-wider", t.textMut)}>{driver.truck}</div>
@@ -183,11 +232,48 @@ const DriverRow = memo(function DriverRow({ driver, t }) {
         </select>
       </td>
 
-      <td className="px-3 py-1.5 w-36">
+      <td className="px-2 py-1.5 w-36">
+        <button
+          onClick={toggleResources}
+          title="Paperlog · ELD manuals · tablet mount — click to toggle"
+          className="text-xs font-semibold px-2 py-1 rounded-lg border btn-press inline-flex items-center justify-center gap-1.5 w-full"
+          style={
+            resourcesOk
+              ? { color: STATUS.ok.text, background: isDark ? "transparent" : STATUS.ok.tint, borderColor: STATUS.ok.dot + "55" }
+              : { color: isDark ? STATUS.pending.dot : STATUS.pending.text, background: isDark ? "transparent" : STATUS.pending.tint, borderColor: STATUS.pending.dot + "66" }
+          }
+        >
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: resourcesOk ? STATUS.ok.dot : STATUS.pending.dot }} />
+          {resourcesOk ? "All provided" : "Need to Remind"}
+        </button>
+      </td>
+
+      <td className="px-3 py-1.5 w-28">
         <div className="flex items-center gap-2">
           <EldDot />
           <span className="text-xs font-mono" style={{ color: isDark ? STATUS.pending.dot : STATUS.pending.text }}>API needed</span>
         </div>
+      </td>
+
+      <td className="px-3 py-1.5 w-36">
+        {Array.isArray(driver.violations) && driver.violations.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {driver.violations.map((v, i) => (
+              <span
+                key={i}
+                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap"
+                style={{ color: isDark ? STATUS.emergency.dot : STATUS.emergency.text, background: isDark ? "transparent" : STATUS.emergency.tint }}
+              >
+                {v}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <EldDot />
+            <span className="text-xs font-mono" style={{ color: isDark ? STATUS.pending.dot : STATUS.pending.text }}>API needed</span>
+          </div>
+        )}
       </td>
 
       <td className="px-3 py-1.5 w-32">
@@ -282,13 +368,15 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse min-w-[760px]">
+        <table className="w-full border-collapse min-w-[1080px]">
           <thead>
             <tr className={t.tblHead}>
               <th className="px-2 py-1.5 text-center text-xs font-semibold w-16 uppercase tracking-wider">Done</th>
-              <th className="px-3 py-1.5 text-left text-xs font-semibold w-52 uppercase tracking-wider">Driver / Truck</th>
+              <th className="px-3 py-1.5 text-left text-xs font-semibold w-56 uppercase tracking-wider">Driver / Truck</th>
               <th className="px-2 py-1.5 text-left text-xs font-semibold w-36 uppercase tracking-wider">Status</th>
-              <th className="px-3 py-1.5 text-left text-xs font-semibold w-36 uppercase tracking-wider">ELD</th>
+              <th className="px-2 py-1.5 text-left text-xs font-semibold w-36 uppercase tracking-wider">Resources</th>
+              <th className="px-3 py-1.5 text-left text-xs font-semibold w-28 uppercase tracking-wider">ELD</th>
+              <th className="px-3 py-1.5 text-left text-xs font-semibold w-36 uppercase tracking-wider">Violations</th>
               <th className="px-3 py-1.5 text-left text-xs font-semibold w-32 uppercase tracking-wider">Delivery</th>
               <th className="px-3 py-1.5 text-left text-xs font-semibold w-44 uppercase tracking-wider">Updater</th>
             </tr>
@@ -296,7 +384,7 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
           <tbody>
             {drivers.length === 0 ? (
               <tr>
-                <td colSpan={5} className={cx("px-4 py-6 text-center text-xs italic", t.textMut)}>
+                <td colSpan={8} className={cx("px-4 py-6 text-center text-xs italic", t.textMut)}>
                   No drivers — click "+ Driver" to add one.
                 </td>
               </tr>

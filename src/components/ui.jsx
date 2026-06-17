@@ -12,10 +12,56 @@ const logoOverride = import.meta.glob("../assets/algo-logo.{png,jpg,jpeg,webp}",
 const logoUrl = Object.values(logoOverride)[0] ?? logoSvg;
 
 // ---------------------------------------------------------------------------
-// Animated background orbs (one per app, behind everything).
+// Animated background orbs — slow-breathing light pools behind everything.
 // ---------------------------------------------------------------------------
-// No decorative orbs — the logo watermark is the only background element.
-export function Background() { return null; }
+export function Background({ isDark }) {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+      {/* Top-right pool */}
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: 700,
+          height: 700,
+          top: "-8%",
+          right: "6%",
+          background: isDark
+            ? "radial-gradient(circle, rgba(14,165,233,0.24) 0%, transparent 68%)"
+            : "radial-gradient(circle, rgba(2,132,199,0.14) 0%, transparent 68%)",
+          animation: "bgBreathe 8s ease-in-out infinite",
+        }}
+      />
+      {/* Bottom-left pool */}
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: 580,
+          height: 580,
+          bottom: "-8%",
+          left: "4%",
+          background: isDark
+            ? "radial-gradient(circle, rgba(56,189,248,0.16) 0%, transparent 68%)"
+            : "radial-gradient(circle, rgba(56,189,248,0.11) 0%, transparent 68%)",
+          animation: "bgBreatheSlow 10s ease-in-out infinite 3s",
+        }}
+      />
+      {/* Centre accent (dark only) */}
+      {isDark && (
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 420,
+            height: 420,
+            top: "42%",
+            left: "44%",
+            background: "radial-gradient(circle, rgba(2,132,199,0.11) 0%, transparent 70%)",
+            animation: "bgBreathe 13s ease-in-out infinite 6s",
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Giant Algo Service logo (green AG monogram) watermark centred behind the

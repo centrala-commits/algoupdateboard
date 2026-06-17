@@ -25,9 +25,15 @@ select { appearance: auto; }
    LIQUID GLASS — neutral, professional, transparent
    =================================================================== */
 
-/* Page ground — flat slate (#F1F5F9) so white cards lift off it. */
+/* Page ground — sky-50 (#F0F9FF) with vivid blue light pools so the surface
+   has genuine depth in day mode. */
 .app-bg-light {
-  background: #F1F5F9;
+  background:
+    radial-gradient(1100px 740px at 92% -8%, rgba(2,132,199,0.20), transparent 60%),
+    radial-gradient(820px 580px at -6% 114%, rgba(56,189,248,0.15), transparent 55%),
+    radial-gradient(580px 440px at 16% 42%, rgba(147,197,253,0.14), transparent 62%),
+    radial-gradient(700px 500px at 52% 55%, rgba(255,255,255,0.70), transparent 72%),
+    #F0F9FF;
   background-attachment: fixed;
 }
 
@@ -38,24 +44,25 @@ select { appearance: auto; }
   box-shadow: 0 1px 3px rgba(15,23,42,0.06);
 }
 
-/* Midnight Slate ground (#0F172A) — deep, serious canvas with Electric Teal glows. */
+/* Deep Navy ground (#070F1D) — electric cyan glows with serious depth. */
 .app-bg-dark {
   background:
-    radial-gradient(1100px 680px at 82% -12%, rgba(14,165,233,0.20), transparent 60%),
-    radial-gradient(900px 600px at -5% 108%, rgba(14,165,233,0.10), transparent 55%),
-    linear-gradient(160deg, #0F172A 0%, #111B30 55%, #0B1220 100%);
+    radial-gradient(1250px 800px at 88% -10%, rgba(14,165,233,0.34), transparent 58%),
+    radial-gradient(900px 660px at -7% 114%, rgba(56,189,248,0.20), transparent 55%),
+    radial-gradient(560px 520px at 52% 38%, rgba(2,132,199,0.12), transparent 65%),
+    linear-gradient(160deg, #070F1D 0%, #0C1929 52%, #060E18 100%);
   background-attachment: fixed;
 }
 
-/* Smoked Obsidian glass (#1E293B @ 0.45) + heavy blur, Silhouette border (#334155). */
+/* Deep navy glass + heavy blur, subtle electric blue border. */
 .glass-dark {
-  background: rgba(30,41,59,0.45);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-          backdrop-filter: blur(18px) saturate(150%);
-  border: 1px solid rgba(51,65,85,0.90);
+  background: rgba(13,25,48,0.52);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+          backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(14,165,233,0.22);
   box-shadow:
-    0 8px 30px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    0 8px 32px rgba(0,0,0,0.50),
+    inset 0 1px 0 rgba(56,189,248,0.08);
 }
 
 /* Frosted white glass header (restored). */
@@ -68,11 +75,11 @@ select { appearance: auto; }
 }
 
 .glass-header-dark {
-  background: linear-gradient(90deg, rgba(14,165,233,0.16) 0%, rgba(15,23,42,0.66) 45%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-          backdrop-filter: blur(16px) saturate(150%);
-  border-bottom: 1px solid rgba(51,65,85,0.90);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 2px 18px rgba(0,0,0,0.45);
+  background: linear-gradient(90deg, rgba(14,165,233,0.30) 0%, rgba(2,132,199,0.14) 32%, rgba(7,15,29,0.82) 100%);
+  -webkit-backdrop-filter: blur(16px) saturate(165%);
+          backdrop-filter: blur(16px) saturate(165%);
+  border-bottom: 1px solid rgba(14,165,233,0.28);
+  box-shadow: 0 1px 0 rgba(56,189,248,0.10), 0 2px 22px rgba(0,0,0,0.55);
 }
 
 .glass-bar-light {
@@ -217,3 +224,33 @@ a, select, input, textarea, tr, th, td {
     box-shadow 0.18s ease,
     opacity 0.18s ease;
 }
+
+/* ===================================================================
+   ANIMATED BACKGROUND ORBS
+   =================================================================== */
+@keyframes bgBreathe {
+  0%, 100% { opacity: 0.65; transform: scale(0.95) translate(0, 0); }
+  50%       { opacity: 1;    transform: scale(1.08) translate(2%, 1%); }
+}
+@keyframes bgBreatheSlow {
+  0%, 100% { opacity: 0.50; transform: scale(0.92) translate(0, 0); }
+  50%       { opacity: 0.85; transform: scale(1.10) translate(-2%, -1%); }
+}
+
+/* ===================================================================
+   MODAL ENTRANCE
+   =================================================================== */
+@keyframes modal-pop {
+  0%   { opacity: 0; transform: scale(0.96) translateY(6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-pop { animation: modal-pop 0.18s ease-out both; }
+
+/* ===================================================================
+   FADE-IN (error messages, etc.)
+   =================================================================== */
+@keyframes fade-in {
+  0%   { opacity: 0; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fade-in 0.18s ease-out both; }

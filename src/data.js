@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// AG Dispatch — static config + seed data
+// ALGO ELD Update Board System — static config + seed data
 // ---------------------------------------------------------------------------
 
 export const SHIFTS = ["Day", "Main", "Night"];
@@ -144,3 +144,28 @@ export const nowTime = () =>
 
 // Join truthy class names.
 export const cx = (...parts) => parts.filter(Boolean).join(" ");
+
+// ---------------------------------------------------------------------------
+// Per-driver metadata envelope, stored as JSON in the existing `notes` text
+// column (so no DB migration is needed). Holds:
+//   eld — ELD link (URL)
+//   res — resources ok? omitted when true (the default "All provided")
+//   tg  — Telegram / contact info
+// Legacy rows that stored a raw ELD-link string are read as { eld: <string> }.
+// ---------------------------------------------------------------------------
+export function parseMeta(notes) {
+  if (!notes || typeof notes !== "string") return {};
+  const s = notes.trim();
+  if (s.startsWith("{")) {
+    try { return JSON.parse(s); } catch { return {}; }
+  }
+  return s ? { eld: s } : {};
+}
+
+export function serializeMeta(meta) {
+  const out = {};
+  if (meta.eld) out.eld = meta.eld;
+  if (meta.res === false) out.res = false; // only persist the non-default state
+  if (meta.tg) out.tg = meta.tg;
+  return Object.keys(out).length ? JSON.stringify(out) : "";
+}

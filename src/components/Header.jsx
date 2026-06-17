@@ -58,9 +58,13 @@ export function Header({ t, user, onLogout }) {
 
   return (
     <header className={cx("fixed top-0 left-0 right-0 z-40 h-14 flex items-center gap-2 px-4", t.headerCls)}>
-      {/* Logo */}
-      <div className="flex items-center shrink-0">
+      {/* Logo + system name */}
+      <div className="flex items-center gap-2 shrink-0">
         <img src={logoUrl} alt="AG" draggable={false} className="h-7 w-auto" />
+        <div className="hidden lg:flex flex-col leading-none gap-0.5">
+          <span className={cx("text-[9px] font-bold tracking-[0.16em] uppercase", t.accentText)}>ELD Update Board</span>
+          <span className={cx("text-[8px] tracking-wide opacity-50", t.textSec)}>System</span>
+        </div>
       </div>
 
       {/* Server status */}
