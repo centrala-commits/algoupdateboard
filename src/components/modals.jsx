@@ -509,7 +509,7 @@ export function AddAccountModal({ t, onClose }) {
         <div>
           <label className={labelCls}>Role</label>
           <div className="flex gap-2">
-            {["specialist", "updater"].map((r) => (
+            {["admin", "specialist", "updater"].map((r) => (
               <button
                 type="button"
                 key={r}
@@ -524,7 +524,9 @@ export function AddAccountModal({ t, onClose }) {
             ))}
           </div>
           <p className={cx("text-[11px] mt-1.5", t.textMut)}>
-            {form.role === "specialist"
+            {form.role === "admin"
+              ? "Full access — can manage accounts, add/delete companies."
+              : form.role === "specialist"
               ? "Can add / delete companies and drivers."
               : "Can update driver statuses and notes only."}
           </p>

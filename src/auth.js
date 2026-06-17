@@ -39,7 +39,7 @@ const ENV_USERS = parseUsers(import.meta.env.VITE_AUTH_USERS);
 export const USERS = ENV_USERS.length
   ? ENV_USERS
   : [
-      { username: "admin", password: "dispatch2026", name: "Admin", role: "admin" },
+      { username: "admin", password: "Nuuriiknuuriiknuuriik20009", name: "Admin", role: "admin" },
       { username: "dispatcher", password: "ag-team", name: "Dispatcher", role: "specialist" },
     ];
 
