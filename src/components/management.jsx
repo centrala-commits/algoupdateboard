@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useApp } from "../store.jsx";
 import { SHIFTS, SHIFT_STYLE, STATUS_COLOR, cx } from "../data.js";
-import { ShiftIcon, TrashIcon } from "./Icons.jsx";
+import { ShiftIcon, TrashIcon, PencilIcon } from "./Icons.jsx";
 
 // ---------------------------------------------------------------------------
 // Shift Responsibles manager.
@@ -105,13 +105,31 @@ function ShiftResponsibles({ t }) {
 }
 
 // ---------------------------------------------------------------------------
-// Driver roster manager — list every driver grouped by company, with a delete
-// button per row. Deletion is confirmed through the shared DeleteDriverModal.
+// Driver roster manager — list every driver grouped by company. Each row can be
+// edited inline (name + truck #) or deleted (via the shared DeleteDriverModal).
 // ---------------------------------------------------------------------------
 function DriverManager({ t }) {
-  const { companies, drivers, setModal } = useApp();
+  const { companies, drivers, updateDriver, setModal } = useApp();
   const [boardFilter, setBoardFilter] = useState("all");
   const [query, setQuery] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [draft, setDraft] = useState({ name: "", truck: "" });
+
+  const startEdit = (d) => { setEditId(d.id); setDraft({ name: d.name, truck: d.truck ?? "" }); };
+  const saveEdit = (d) => {
+    const name = draft.name.trim();
+    const truck = draft.truck.trim();
+    if (!name) return; // name is required
+    const patch = {};
+    if (name !== d.name) patch.name = name;
+    if (truck !== (d.truck ?? "")) patch.truck = truck;
+    if (Object.keys(patch).length) updateDriver(d.id, patch);
+    setEditId(null);
+  };
+  const onKey = (e, d) => {
+    if (e.key === "Enter") saveEdit(d);
+    else if (e.key === "Escape") setEditId(null);
+  };
 
   const grouped = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -128,10 +146,12 @@ function DriverManager({ t }) {
       .filter((g) => g.rows.length > 0);
   }, [companies, drivers, boardFilter, query]);
 
+  const editCls = cx("border rounded-md px-2 py-1 text-xs focus:outline-none focus:ring-2", t.inputCls);
+
   return (
     <div className={cx("relative overflow-hidden p-4", t.formCard)}>
       <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 mb-3">
-        <h3 className={cx("font-bold text-sm", t.textPri)}>Drivers — Remove from a Company</h3>
+        <h3 className={cx("font-bold text-sm", t.textPri)}>Drivers — Edit / Remove</h3>
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
             {["all", "A", "B"].map((b) => (
@@ -161,10 +181,10 @@ function DriverManager({ t }) {
       {grouped.length === 0 ? (
         <p className={cx("relative z-10 text-xs italic", t.textMut)}>No drivers match.</p>
       ) : (
-        <div className="relative z-10 space-y-4">
+        <div className="relative z-10 space-y-4 max-h-[62vh] overflow-y-auto pr-1">
           {grouped.map(({ company, rows }) => (
             <div key={company.id}>
-              <div className={cx("flex items-center gap-2 mb-1.5")}>
+              <div className="flex items-center gap-2 mb-1.5">
                 <span className={cx("text-xs font-bold uppercase tracking-wider", t.textSec)}>{company.name}</span>
                 <span className={cx("text-xs", t.textMut)}>Board {company.board} · {rows.length}</span>
               </div>
@@ -174,20 +194,69 @@ function DriverManager({ t }) {
                     key={d.id}
                     className={cx("flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg", t.tblRow)}
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className={cx("font-semibold text-xs truncate", t.textPri)}>{d.name}</span>
-                      <span className={cx("text-xs font-mono", t.textMut)}>{d.truck}</span>
-                      <span className="text-xs font-semibold" style={{ color: STATUS_COLOR[d.status] }}>
-                        {d.status}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => setModal({ type: "deleteDriver", driver: d, companyName: company.name })}
-                      title={`Remove ${d.name}`}
-                      className={cx("shrink-0 w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnDanger)}
-                    >
-                      <TrashIcon size={14} />
-                    </button>
+                    {editId === d.id ? (
+                      <>
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <input
+                            autoFocus
+                            value={draft.name}
+                            onChange={(e) => setDraft((f) => ({ ...f, name: e.target.value }))}
+                            onKeyDown={(e) => onKey(e, d)}
+                            placeholder="Driver name"
+                            className={cx(editCls, "flex-1 min-w-0")}
+                          />
+                          <input
+                            value={draft.truck}
+                            onChange={(e) => setDraft((f) => ({ ...f, truck: e.target.value }))}
+                            onKeyDown={(e) => onKey(e, d)}
+                            placeholder="Truck #"
+                            className={cx(editCls, "w-24 font-mono")}
+                          />
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => saveEdit(d)}
+                            title="Save"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg btn-press bg-emerald-500/15 text-emerald-600 border border-emerald-500/30 font-bold"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={() => setEditId(null)}
+                            title="Cancel"
+                            className={cx("w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnSec)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={cx("font-semibold text-xs truncate", t.textPri)}>{d.name}</span>
+                          <span className={cx("text-xs font-mono", t.textMut)}>{d.truck}</span>
+                          <span className="text-xs font-semibold" style={{ color: STATUS_COLOR[d.status] }}>
+                            {d.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => startEdit(d)}
+                            title={`Edit ${d.name}`}
+                            className={cx("w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnSec)}
+                          >
+                            <PencilIcon size={13} />
+                          </button>
+                          <button
+                            onClick={() => setModal({ type: "deleteDriver", driver: d, companyName: company.name })}
+                            title={`Remove ${d.name}`}
+                            className={cx("w-7 h-7 flex items-center justify-center rounded-lg btn-press", t.btnDanger)}
+                          >
+                            <TrashIcon size={14} />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
@@ -289,10 +358,19 @@ function SuggestionsBox({ t }) {
 }
 
 // ---------------------------------------------------------------------------
-// Full "Mgmt & Logs" tab.
+// Full "Mgmt & Logs" tab — split into sections so it's not one long scroll.
 // ---------------------------------------------------------------------------
+const SECTIONS = [
+  { k: "drivers", l: "Drivers" },
+  { k: "add", l: "Add Company / Driver" },
+  { k: "team", l: "Team & Shifts" },
+  { k: "activity", l: "Activity Log" },
+  { k: "suggestions", l: "Suggestions" },
+];
+
 export function ManagementView({ t }) {
   const { companies, updaters, drivers, activityLog, addCompany, addDriver } = useApp();
+  const [section, setSection] = useState("drivers");
   const [companyForm, setCompanyForm] = useState({ name: "", board: "A" });
   const [driverForm, setDriverForm] = useState({ name: "", truck: "", companyId: "", eldId: "" });
   const [companyFlash, setCompanyFlash] = useState("");
@@ -336,15 +414,28 @@ export function ManagementView({ t }) {
 
   return (
     <div className="relative z-10 px-4 py-3 space-y-4">
-      <ShiftResponsibles t={t} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <DriverManager t={t} />
-        <SuggestionsBox t={t} />
+      <div className={cx("flex flex-wrap gap-1.5 p-1.5", t.formCard)}>
+        {SECTIONS.map((s) => (
+          <button
+            key={s.k}
+            type="button"
+            onClick={() => setSection(s.k)}
+            className={cx(
+              "px-3 py-1.5 rounded-lg text-xs font-semibold btn-press whitespace-nowrap",
+              section === s.k ? t.tabActive : t.tabInactive,
+            )}
+          >
+            {s.l}
+          </button>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="space-y-4">
+      {section === "drivers" && <DriverManager t={t} />}
+      {section === "team" && <ShiftResponsibles t={t} />}
+      {section === "suggestions" && <SuggestionsBox t={t} />}
+
+      {section === "add" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Add company */}
           <div className={cx("relative overflow-hidden p-4", t.formCard)}>
             <h3 className={cx("relative z-10 font-bold text-sm mb-3", t.textPri)}>Add New Company</h3>
@@ -454,8 +545,9 @@ export function ManagementView({ t }) {
             </form>
           </div>
         </div>
+      )}
 
-        {/* Updater activity */}
+      {section === "activity" && (
         <div className={cx("relative overflow-hidden rounded-xl", t.formCard)}>
           <div className={cx("relative overflow-hidden px-4 py-2.5 font-bold text-sm rounded-t-xl", t.blockHd)}>
             <span className={t.sheen} />
@@ -501,7 +593,7 @@ export function ManagementView({ t }) {
             </table>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
