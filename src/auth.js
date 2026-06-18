@@ -35,26 +35,10 @@ function parseUsers(raw) {
 
 const ENV_USERS = parseUsers(import.meta.env.VITE_AUTH_USERS);
 
-// Fall back to built-in defaults if .env is missing/empty.
-export const USERS = ENV_USERS.length
-  ? ENV_USERS
-  : [
-      { username: "admin", password: "Nuuriiknuuriiknuuriik20009", name: "Admin", role: "admin" },
-      { username: "dispatcher", password: "ag-team", name: "Dispatcher", role: "specialist" },
-    ];
-
 const SESSION_KEY = "ag-dispatch-session";
 
-// Synchronous check against hardcoded users only (used as fallback).
-export function authenticate(username, password) {
-  const u = USERS.find(
-    (x) => x.username.toLowerCase() === username.trim().toLowerCase() && x.password === password,
-  );
-  return u ? { username: u.username, name: u.name, role: u.role ?? "admin" } : null;
-}
-
-// Async: tries Supabase user_accounts first (if enabled), then hardcoded fallback.
-// This is what Login.jsx should call.
+// Async: tries Supabase user_accounts first, then ENV fallback (if set).
+// All real accounts live in the Supabase user_accounts table.
 export async function authenticateAsync(username, password) {
   if (dbEnabled) {
     try {
@@ -64,7 +48,14 @@ export async function authenticateAsync(username, password) {
       console.error("Supabase auth failed:", e);
     }
   }
-  return authenticate(username, password);
+  // ENV fallback — only active if VITE_AUTH_USERS is set in .env / Render env vars.
+  if (ENV_USERS.length) {
+    const u = ENV_USERS.find(
+      (x) => x.username.toLowerCase() === username.trim().toLowerCase() && x.password === password,
+    );
+    if (u) return { username: u.username, name: u.name, role: u.role ?? "admin" };
+  }
+  return null;
 }
 
 export function loadSession() {
