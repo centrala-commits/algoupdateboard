@@ -458,11 +458,17 @@ export function AddAccountModal({ t, onClose }) {
       });
       onClose();
     } catch (err) {
-      setError(
-        err?.message?.toLowerCase().includes("duplicate") || err?.code === "23505"
-          ? "Username already exists — pick a different one."
-          : "Failed to save. Check your Supabase connection and try again.",
-      );
+      const code = err?.code;
+      const msg = err?.message || String(err);
+      if (code === "23505" || msg.toLowerCase().includes("duplicate")) {
+        setError("Username already exists — pick a different one.");
+      } else if (code === "23514" || msg.toLowerCase().includes("check constraint")) {
+        setError('Role "admin" is not allowed by the database yet — run the ALTER TABLE SQL in Supabase (see setup instructions).');
+      } else if (code === "42P01" || msg.toLowerCase().includes("does not exist")) {
+        setError("Table not found — run the CREATE TABLE SQL in Supabase first.");
+      } else {
+        setError(`Save failed: ${msg}`);
+      }
     } finally {
       setLoading(false);
     }
