@@ -7,9 +7,10 @@ import {
   nowTime,
 } from "./data.js";
 import { THEME } from "./theme.js";
-import { dbEnabled } from "./supabase.js";
+import { supabase, dbEnabled } from "./supabase.js";
 import {
   loadAll,
+  driverFromRow,
   dbAddCompany,
   dbDeleteCompany,
   dbAddDriver,
@@ -114,6 +115,52 @@ export function AppProvider({ children, user }) {
       }
     })();
     return () => { cancelled = true; };
+  }, []);
+
+  // --- Supabase Realtime: live sync across all logged-in devices ---------------
+  useEffect(() => {
+    if (!dbEnabled) return;
+    const channel = supabase
+      .channel("board-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "drivers" },
+        ({ eventType, new: n, old: o }) => {
+          if (eventType === "INSERT") {
+            const d = driverFromRow(n);
+            setDrivers((list) => list.some((x) => x.id === d.id) ? list : [...list, d]);
+          } else if (eventType === "UPDATE") {
+            const d = driverFromRow(n);
+            setDrivers((list) => list.map((x) => x.id === d.id ? d : x));
+          } else if (eventType === "DELETE") {
+            setDrivers((list) => list.filter((x) => x.id !== o.id));
+          }
+        },
+      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "companies" },
+        ({ eventType, new: n, old: o }) => {
+          if (eventType === "INSERT") {
+            setCompanies((list) => list.some((c) => c.id === n.id) ? list : [...list, n]);
+          } else if (eventType === "UPDATE") {
+            setCompanies((list) => list.map((c) => c.id === n.id ? n : c));
+          } else if (eventType === "DELETE") {
+            setCompanies((list) => list.filter((c) => c.id !== o.id));
+            setDrivers((list) => list.filter((d) => d.companyId !== o.id));
+          }
+        },
+      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "updaters" },
+        ({ eventType, new: n, old: o }) => {
+          if (eventType === "INSERT") {
+            setUpdaters((list) => list.some((u) => u.id === n.id) ? list : [...list, n]);
+          } else if (eventType === "UPDATE") {
+            setUpdaters((list) => list.map((u) => u.id === n.id ? n : u));
+          } else if (eventType === "DELETE") {
+            setUpdaters((list) => list.filter((u) => u.id !== o.id));
+            setCurrentUpdater((cur) => cur?.id === o.id ? null : cur);
+          }
+        },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   // Persist to localStorage and broadcast to other tabs on every state change.

@@ -393,16 +393,38 @@ const CompanyBlock = memo(function CompanyBlock({ company, drivers, t, onAddDriv
 export function BoardView({ board, t }) {
   const { companies, drivers, setModal, updaters, assignCompanyDrivers, currentUpdater, user } = useApp();
   const isUpdater = user?.role === "updater";
+
   const boardCompanies = useMemo(() => companies.filter((c) => c.board === board), [companies, board]);
   const companyIds = useMemo(() => new Set(boardCompanies.map((c) => c.id)), [boardCompanies]);
-  const driverCount = useMemo(
-    () => drivers.filter((d) => companyIds.has(d.companyId)).length,
-    [drivers, companyIds],
-  );
+  const boardDrivers = useMemo(() => drivers.filter((d) => companyIds.has(d.companyId)), [drivers, companyIds]);
+
+  const [filterStatus, setFilterStatus] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Reset filters when switching boards.
+  useEffect(() => { setFilterStatus(null); setSearchQuery(""); }, [board]);
+
+  const hasFilter = filterStatus !== null || searchQuery.trim() !== "";
+
+  const filteredGroups = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return boardCompanies
+      .map((c) => {
+        let ds = boardDrivers.filter((d) => d.companyId === c.id);
+        if (filterStatus) ds = ds.filter((d) => d.status === filterStatus);
+        if (q) ds = ds.filter((d) =>
+          d.name.toLowerCase().includes(q) || (d.truck ?? "").toLowerCase().includes(q),
+        );
+        return { company: c, drivers: ds };
+      })
+      .filter((g) => !hasFilter || g.drivers.length > 0);
+  }, [boardCompanies, boardDrivers, filterStatus, searchQuery, hasFilter]);
+
+  const matchCount = useMemo(() => filteredGroups.reduce((s, g) => s + g.drivers.length, 0), [filteredGroups]);
 
   return (
     <div className="relative z-10 px-4 py-3">
-      {/* who is responsible on each shift */}
+      {/* shift responsible pills */}
       <div className="flex gap-3 mb-3 flex-wrap">
         {SHIFTS.map((shift) => {
           const people = updaters.filter((u) => u.shift === shift);
@@ -423,11 +445,13 @@ export function BoardView({ board, t }) {
         })}
       </div>
 
-      <div className="flex items-center justify-between mb-3 gap-4">
+      {/* Board title + Add Company */}
+      <div className="flex items-center justify-between mb-2 gap-4">
         <div>
           <h2 className={cx("text-base font-bold", t.textPri)}>Board {board}</h2>
           <p className={cx("text-xs", t.textSec)}>
-            {boardCompanies.length} companies · {driverCount} drivers
+            {boardCompanies.length} companies ·{" "}
+            {hasFilter ? `${matchCount} of ${boardDrivers.length} drivers` : `${boardDrivers.length} drivers`}
           </p>
         </div>
         {!isUpdater && (
@@ -440,14 +464,53 @@ export function BoardView({ board, t }) {
         )}
       </div>
 
-      {boardCompanies.length === 0 ? (
-        <div className={cx("text-center py-24 text-sm italic", t.textMut)}>No companies on Board {board} yet.</div>
+      {/* Filter + search — compact, minimal */}
+      <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+        {[null, ...STATUSES].map((s) => (
+          <button
+            key={s ?? "all"}
+            onClick={() => setFilterStatus(filterStatus === s ? null : s)}
+            className={cx(
+              "px-2.5 py-0.5 rounded-full text-xs font-semibold btn-press whitespace-nowrap border",
+              filterStatus === s
+                ? s ? "border-current/30" : t.tabActive
+                : cx(t.tabInactive, "opacity-60 hover:opacity-100"),
+            )}
+            style={filterStatus === s && s
+              ? { color: STATUS_COLOR[s], borderColor: STATUS_COLOR[s] + "55" }
+              : undefined}
+          >
+            {s ?? "All"}
+          </button>
+        ))}
+        <div className="flex-1" />
+        <input
+          type="text"
+          placeholder="Search…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={cx("border rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:ring-2 w-36", t.inputCls)}
+        />
+        {hasFilter && (
+          <button
+            onClick={() => { setFilterStatus(null); setSearchQuery(""); }}
+            className={cx("text-xs px-2 py-0.5 rounded-full border btn-press", t.tabInactive)}
+          >
+            ✕ Clear
+          </button>
+        )}
+      </div>
+
+      {filteredGroups.length === 0 ? (
+        <div className={cx("text-center py-24 text-sm italic", t.textMut)}>
+          {hasFilter ? "No drivers match your filter." : `No companies on Board ${board} yet.`}
+        </div>
       ) : (
-        boardCompanies.map((c) => (
+        filteredGroups.map(({ company, drivers: ds }) => (
           <CompanyBlock
-            key={c.id}
-            company={c}
-            drivers={drivers.filter((d) => d.companyId === c.id)}
+            key={company.id}
+            company={company}
+            drivers={ds}
             t={t}
             onAddDriver={(companyId) => setModal({ type: "addDriver", companyId })}
             onDelete={(company) => setModal({ type: "deleteCompany", company })}

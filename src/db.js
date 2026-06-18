@@ -5,7 +5,7 @@ import { supabase } from "./supabase.js";
 // and wraps the Supabase CRUD calls. Only used when dbEnabled.
 // ---------------------------------------------------------------------------
 
-const driverFromRow = (r) => ({
+export const driverFromRow = (r) => ({
   id: r.id,
   companyId: r.company_id,
   name: r.name,
